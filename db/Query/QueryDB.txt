@@ -1,0 +1,83 @@
+-- Membuat tabel Karyawan
+CREATE TABLE Karyawan (
+    IDKaryawan INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
+    NamaKaryawan VARCHAR(255) NOT NULL,  -- Nama karyawan
+    Jabatan VARCHAR(100) NOT NULL,  -- Jabatan karyawan
+    NIK VARCHAR(50) UNIQUE NOT NULL,  -- Nomor Induk Kependudukan, harus unik
+    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email karyawan, harus unik
+    TanggalLahir DATE NOT NULL,  -- Tanggal lahir karyawan
+    TanggalBergabung DATE NOT NULL,  -- Tanggal bergabung dengan perusahaan
+    Alamat TEXT NOT NULL,  -- Alamat karyawan
+    NoTelp VARCHAR(15) NOT NULL,  -- Nomor telepon karyawan
+    MasaKerja INT,  -- Kolom untuk menyimpan masa kerja
+    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
+    Password VARCHAR(255) NOT NULL  -- Password untuk login
+);
+
+-- Membuat tabel Manager
+CREATE TABLE Manager (
+    IDManager INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
+    NamaManager VARCHAR(255) NOT NULL,  -- Nama manajer
+    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email manajer, harus unik
+    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
+    Password VARCHAR(255) NOT NULL  -- Password untuk login
+);
+
+-- Membuat tabel HRD
+CREATE TABLE HRD (
+    IDHRD INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
+    NamaHRD VARCHAR(255) NOT NULL,  -- Nama HRD
+    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email HRD, harus unik
+    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
+    Password VARCHAR(255) NOT NULL  -- Password untuk login
+);
+
+-- Membuat tabel PengajuanCuti
+CREATE TABLE PengajuanCuti (
+    IDPengajuan INT PRIMARY KEY AUTO_INCREMENT,  
+    IDKaryawan INT,  
+    NamaKaryawan VARCHAR(255) NOT NULL,  
+    Jabatan VARCHAR(100) NOT NULL,  
+    NIK VARCHAR(50) NOT NULL,  
+    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota') NOT NULL,  
+    TanggalAwal DATE NOT NULL,  
+    TanggalAkhir DATE NOT NULL,  
+    Alasan TEXT NOT NULL,  
+    Lampiran VARCHAR(255),  
+    Status ENUM('Pending', 'Disetujui', 'Ditolak') NOT NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
+    FOREIGN KEY (IDKaryawan) REFERENCES Karyawan(IDKaryawan)  
+);
+
+-- Membuat view StatusCuti
+CREATE VIEW StatusCuti AS
+SELECT TanggalAwal, JenisCuti, Status
+FROM PengajuanCuti;
+
+-- Membuat view LaporanCuti
+CREATE VIEW LaporanCuti AS
+SELECT 
+    ROW_NUMBER() OVER (ORDER BY TanggalAwal) AS No,
+    TanggalAwal,
+    JenisCuti,
+    DATEDIFF(TanggalAkhir, TanggalAwal) + 1 AS `Jumlah hari`
+FROM PengajuanCuti;
+
+
+-- Trigger untuk memperbarui MasaKerja pada tabel Karyawan
+DELIMITER $$
+
+CREATE TRIGGER before_insert_karyawan
+BEFORE INSERT ON Karyawan
+FOR EACH ROW
+BEGIN
+    SET NEW.MasaKerja = TIMESTAMPDIFF(YEAR, NEW.TanggalBergabung, CURDATE());
+END$$
+
+CREATE TRIGGER before_update_karyawan
+BEFORE UPDATE ON Karyawan
+FOR EACH ROW
+BEGIN
+    SET NEW.MasaKerja = TIMESTAMPDIFF(YEAR, NEW.TanggalBergabung, CURDATE());
+END$$
+
+DELIMITER ;

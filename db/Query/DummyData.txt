@@ -1,0 +1,26 @@
+-- Karyawan
+INSERT INTO Karyawan (NamaKaryawan, Jabatan, NIK, Email, TanggalLahir, TanggalBergabung, Alamat, NoTelp, MasaKerja, Username, Password)
+VALUES 
+    ('John Doe', 'Staff', '1234567890', 'john.doe@example.com', '1990-05-15', '2010-07-01', 'Jl. Raya No. 123, Jakarta', '081234567890', 12, 'johndoe', 'password123'),
+    ('Jane Smith', 'Manager', '0987654321', 'jane.smith@example.com', '1985-09-20', '2005-03-10', 'Jl. Indah No. 456, Surabaya', '087654321098', 17, 'janesmith', 'password456'),
+    ('Michael Johnson', 'Analyst', '5678901234', 'michael.johnson@example.com', '1995-12-03', '2018-02-15', 'Jl. Mawar No. 789, Bandung', '089012345678', 6, 'michaelj', 'securepwd');
+
+-- Manager
+INSERT INTO Manager (NamaManager, Email, Username, Password)
+VALUES 
+    ('Sarah Lee', 'sarah.lee@example.com', 'sarahlee', 'managerpwd1'),
+    ('David Wong', 'david.wong@example.com', 'davidwong', 'managerpwd2');
+
+-- HRD
+INSERT INTO HRD (NamaHRD, Email, Username, Password)
+VALUES 
+    ('Jessica Tan', 'jessica.tan@example.com', 'jessicatan', 'hrdpwd1'),
+    ('Kevin Chan', 'kevin.chan@example.com', 'kevinchan', 'hrdpwd2');
+
+-- Pengajuan Cuti
+INSERT INTO PengajuanCuti (IDKaryawan, NamaKaryawan, Jabatan, NIK, JenisCuti, TanggalAwal, TanggalAkhir, Alasan, Lampiran, Status)
+VALUES 
+    (1, 'John Doe', 'Staff', '1234567890', 'cuti sakit', '2024-06-01', '2024-06-03', 'Sakit perut', 'cuti_sakit_johndoe.pdf', 'Disetujui'),
+    (2, 'Jane Smith', 'Manager', '0987654321', 'cuti melahirkan', '2024-07-10', '2024-08-10', 'Melahirkan anak kedua', 'cuti_melahirkan_janesmith.pdf', 'Pending'),
+    (3, 'Michael Johnson', 'Analyst', '5678901234', 'cuti 1 hari area luar kota', '2024-07-15', '2024-07-15', 'Meeting di luar kota', NULL, 'Ditolak');
+

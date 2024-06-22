@@ -1,0 +1,60 @@
+Tabel Karyawan
+IDKaryawan (PK)
+NamaKaryawan
+Jabatan
+NIK
+Email	 
+Tanggal Lahir
+Tanggal Bergabung
+Alamat
+No. Telp
+Masa Kerja
+Username
+Password
+
+Tabel Manager
+IDManager
+NamaManager
+Email
+Username
+Password
+
+Tabel HRD
+IDHRD
+NamaHRD
+Email
+Username
+Password
+
+Tabel PengajuanCuti
+IDPengajuan (PK)
+IDKaryawan (FK)
+NamaKaryawan
+Jabatan
+NIK
+Jenis Cuti
+	-cuti sakit
+	-cuti meninggal (keluarga)
+	-cuti sidang sarjana
+	-cuti wisuda
+	-cuti melahirkan
+	-cuti 1 hari area luar kota
+TanggalAwal
+TanggalAkhir
+Alasan
+Status
+	-pending
+	-disetujui
+	-ditolak
+Lampiran (file)
+
+View StatusCuti
+TanggalAwal from Tabel pengajuan cuti
+JenisCuti from table pengajuan cuti
+Status  from table pengajuan cuti
+
+View Laporan Cuti
+No AutoIncrement
+TanggalAwal From Tabel PengajuanCuti
+JenisCuti From Tabel PengajuanCuti
+Jumlah hari (TanggalAkhir From Tabel PengajuanCuti - TanggalAwal From Tabel PengajuanCuti)
