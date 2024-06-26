@@ -8,31 +8,30 @@
     <link rel="stylesheet" href="../assets/css/style.css">
 </head>
 <body>
-    <section class="login-form">
+    <section class="forgot-form">
 		<div class="container ">
 			<div class="row justify-content-center">
 				<div class="card-wrapper">
 					<div class="brand text-center mt-5">
-						<img src="../assets/img/logo.png" alt="logo" >
+						<img src="../assets/img/logo_login.png" alt="logo" >
 					</div>
-                    <form method="POST" class="my-login-validation" novalidate="">
-                        <div class="form-group m-4">
-                            <input id="Id karyawan" type="number" class="form-control" name="id_karyawan" value="" placeholder="ID Karyawan" required autofocus>
+                    <div class="information text-center mt-5" style="color:#000;">
+                        <img src="../assets/img/lock.png" alt="logo" >
+                        <p class="fs-5 fw-bold">Enter your email, phone, or username and we'll send you a link to change a new password</p>
+                    </div>
+                    <form method="POST" class="my-login-validation"  novalidate="">
+                        <div class="form-group" style="margin-top: 100px;">
+                            <input id="email" type="email" class="form-control" name="email" value="" placeholder="ID Karyawan" required autofocus>
                         </div>
-                        <div class="form-group m-4">
-                            <input id="password" type="password" class="form-control" name="password" placeholder="Password" required data-eye>
-                        </div>
-
-                        <div class="form-group text-center m-4">
+                        <div class="form-group text-center mt-4">
                             <button style="width: 100%;" type="submit" class="btn btn-primary btn-block">
                                 Log in
                             </button>
-                            <span><a href="forgot-password.php">Forgot Password ?</a></span>
                         </div>
                     </form>
 
-					<div class="footer">
-						<div class="mt-4 text-center">
+					<div class="footer m-2">
+						<div class="mt-5 text-center">
                             Don't have an account? <a href="registerView.php">Sign Up</a>
                         </div>
 					</div>
