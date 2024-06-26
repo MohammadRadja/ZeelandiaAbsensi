@@ -1,0 +1,48 @@
+/* login & forgot */
+.login-form , .registrasi-form{
+    width:100%;
+    height:100vh;
+    color : #fff;
+    background:linear-gradient(to top, rgb(70, 130, 180),rgb(232,218,71));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.login-form a,.registrasi-form a,.forgot-form a{
+    text-decoration: none;
+    color : #fff;
+    font-size:20px;
+}
+
+{
+    text-decoration: none;
+    color : #fff;
+    font-size:20px;
+}
+
+.forgot-form{
+    width:100%;
+    height:100;
+    color : #fff;
+    background:linear-gradient(to top, rgb(70, 130, 180),rgb(232,218,71));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.dashboard{
+    height:550px;
+    background-color:rgb(255,236,161);
+}
+.profil{
+    width:100%;
+    background-color:rgb(255,236,161);
+    height:950px;
+}
+
+.table-bordered-black th, .table-bordered-black td {
+    border: 1px solid black !important;
+}
+.table-bordered-black thead th {
+    border-bottom-width: 2px;
+}
