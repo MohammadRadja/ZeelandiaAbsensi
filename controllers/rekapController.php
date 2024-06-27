@@ -1,6 +1,4 @@
 <?php
-session_start();
-
 require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
 
 // Inisialisasi variabel
@@ -11,16 +9,11 @@ $rekapData = array();
 if (isset($_SESSION['IDKaryawan'])) {
     $userID = $_SESSION['IDKaryawan'];
 
-     // Query untuk laporan cuti dari view LaporanCuti
-     $laporanQuery = "SELECT * FROM LaporanCuti WHERE IDKaryawan = '$userID'";
-    
-     // Logging query
-     error_log("Laporan Query: " . $laporanQuery);
- 
-     $laporanResult = $conn->query($laporanQuery);
- 
+    // Query untuk laporan cuti
+    $laporanQuery = "SELECT TanggalAwal, JenisCuti, Status FROM pengajuancuti WHERE IDKaryawan = '$userID'";
+    $laporanResult = $conn->query($laporanQuery);
 
-     if ($laporanResult) {
+    if ($laporanResult) {
         if ($laporanResult->num_rows > 0) {
             while ($row = $laporanResult->fetch_assoc()) {
                 $laporanData[] = $row;
@@ -29,19 +22,13 @@ if (isset($_SESSION['IDKaryawan'])) {
             $laporanData = array(); // Jika tidak ada data
         }
     } else {
-        // Logging error jika query gagal
-        error_log("Error: " . $laporanQuery . " - " . $conn->error);
         echo "Error: " . $laporanQuery . "<br>" . $conn->error;
     }
 
     // Query untuk rekapitulasi laporan cuti per bulan
     $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti WHERE IDKaryawan = '$userID' GROUP BY MONTH(TanggalAwal)";
-    
-    // Logging query
-    error_log("Rekap Query: " . $rekapQuery);
-
     $rekapResult = $conn->query($rekapQuery);
-    
+
     if ($rekapResult) {
         if ($rekapResult->num_rows > 0) {
             while ($row = $rekapResult->fetch_assoc()) {
@@ -64,7 +51,8 @@ if (isset($_SESSION['IDKaryawan'])) {
         echo "Error: " . $rekapQuery . "<br>" . $conn->error;
     }
 } else {
-    
+    // Handle case when session IDKaryawan is not set
+    // Redirect to login page or handle error
     exit("User session not found. Please login.");
 }
 

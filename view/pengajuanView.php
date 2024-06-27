@@ -2,30 +2,30 @@
     <section class="profil">
         <div class="container pt-5">
             <h2 class="bg-warning p-1">PENGAJUAN CUTI</h2>
-            <form class="edit-profil mt-3">
+            <form class="edit-profil mt-3" action="../controllers/pengajuanController.php" method="POST" enctype="multipart/form-data">
                 <div class="mb-3 row">
-                    <label for="inputName" class="col-sm-2 col-form-label">Nama :</label>
+                    <label for="inputNama" class="col-sm-2 col-form-label">Nama :</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputName" placeholder="Nama">
+                        <input type="text" class="form-control" id="inputNama" name="inputNama" placeholder="Nama">
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputPosition" class="col-sm-2 col-form-label">Jabatan :</label>
+                    <label for="inputJabatan" class="col-sm-2 col-form-label">Jabatan :</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputPosition" placeholder="Jabatan">
+                        <input type="text" class="form-control" id="inputJabatan" name="inputJabatan" placeholder="Jabatan">
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="inputNIK" class="col-sm-2 col-form-label">NIK :</label>
                     <div class="col-sm-10">
-                        <input type="number" class="form-control" id="inputNIK" placeholder="NIK">
+                        <input type="number" class="form-control" id="inputNIK" name="inputNIK" placeholder="NIK">
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputAddress" class="col-sm-2 col-form-label">Jenis Cuti :</label>
+                    <label for="inputJenisCuti" class="col-sm-2 col-form-label">Jenis Cuti :</label>
                     <div class="col-sm-10">
-                        <select class="form-select" id="inputGroupSelect01">
-                            <option selected>Choose...</option>
+                        <select class="form-select" id="inputJenisCuti" name="inputJenisCuti">
+                            <option selected>Pilih Jenis Cuti...</option>
                             <option value="1">Cuti Sakit</option>
                             <option value="2">Cuti Meninggal (Keluarga)</option>
                             <option value="3">Cuti Sidang Sarjana</option>
@@ -36,27 +36,27 @@
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputEmail" class="col-sm-2 col-form-label">Tanggal Awal :</label>
+                    <label for="inputTanggalAwal" class="col-sm-2 col-form-label">Tanggal Awal :</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="inputEmail">
+                        <input type="date" class="form-control" id="inputTanggalAwal" name="inputTanggalAwal">
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputPhone" class="col-sm-2 col-form-label">Tanggal Akhir :</label>
+                    <label for="inputTanggalAkhir" class="col-sm-2 col-form-label">Tanggal Akhir :</label>
                     <div class="col-sm-10">
-                        <input type="date" class="form-control" id="inputPhone">
+                        <input type="date" class="form-control" id="inputTanggalAkhir" name="inputTanggalAkhir">
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputJoinDate" class="col-sm-2 col-form-label">Alasan Cuti :</label>
+                    <label for="inputAlasanCuti" class="col-sm-2 col-form-label">Alasan Cuti :</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputJoinDate">
+                        <input type="text" class="form-control" id="inputAlasanCuti" name="inputAlasanCuti">
                     </div>
                 </div>
                 <div class="mb-3 row">
-                    <label for="inputJoinDate" class="col-sm-2 col-form-label">lampiran :</label>
+                    <label for="inputLampiran" class="col-sm-2 col-form-label">Lampiran :</label>
                     <div class="col-sm-10">
-                        <input type="file" class="form-control" id="inputJoinDate">
+                        <input type="file" class="form-control" id="inputLampiran" name="inputLampiran">
                     </div>
                 </div>
                 <div class="d-flex justify-content-between">

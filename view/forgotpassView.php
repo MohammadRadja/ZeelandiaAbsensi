@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Forgot Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="../assets/img/logo.png" type="image/png"> <!-- Favicon -->
 </head>
 <body>
     <section class="forgot-form">
@@ -19,9 +20,9 @@
                         <img src="../assets/img/lock.png" alt="logo" >
                         <p class="fs-5 fw-bold">Enter your email, phone, or username and we'll send you a link to change a new password</p>
                     </div>
-                    <form method="POST" class="my-login-validation"  novalidate="">
+                    <form method="POST" action="../controllers/forgotpassController.php" class="my-login-validation"  novalidate="">
                         <div class="form-group" style="margin-top: 100px;">
-                            <input id="email" type="email" class="form-control" name="email" value="" placeholder="ID Karyawan" required autofocus>
+                            <input id="ForgotPass" type="text" class="form-control" name="ForgotPass" value="" placeholder="ID Karyawan" required autofocus>
                         </div>
                         <div class="form-group text-center mt-4">
                             <button style="width: 100%;" type="submit" class="btn btn-primary btn-block">

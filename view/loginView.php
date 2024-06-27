@@ -6,6 +6,7 @@
     <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="icon" href="../assets/img/logo.png" type="image/png"> <!-- Favicon -->
 </head>
 <body>
     <section class="login-form">
@@ -15,19 +16,19 @@
 					<div class="brand text-center mt-5">
 						<img src="../assets/img/logo.png" alt="logo" >
 					</div>
-                    <form method="POST" class="my-login-validation" novalidate="">
+                    <form method="POST" action="../controllers/loginController.php" class="my-login-validation" novalidate="">
                         <div class="form-group m-4">
-                            <input id="Id karyawan" type="number" class="form-control" name="id_karyawan" value="" placeholder="ID Karyawan" required autofocus>
+                            <input id="IDkaryawan" type="number" class="form-control" name="IDKaryawan" value="" placeholder="ID Karyawan" required autofocus>
                         </div>
                         <div class="form-group m-4">
-                            <input id="password" type="password" class="form-control" name="password" placeholder="Password" required data-eye>
+                            <input id="Password" type="password" class="form-control" name="Password" placeholder="Password" required data-eye>
                         </div>
 
                         <div class="form-group text-center m-4">
                             <button style="width: 100%;" type="submit" class="btn btn-primary btn-block">
                                 Log in
                             </button>
-                            <span><a href="forgot-password.php">Forgot Password ?</a></span>
+                            <span><a href="forgotpassview.php">Forgot Password ?</a></span>
                         </div>
                     </form>
 
