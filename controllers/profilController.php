@@ -2,6 +2,19 @@
 session_start();
 require_once '../db/koneksi.php'; // Pastikan path ini benar
 
+// Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
+function getEmployeeData($conn, $userID) {
+    $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$userID'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc();
+    } else {
+        return null;
+    }
+}
+
+// Handle POST request untuk update profil
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
     $NamaKaryawan = $_POST['inputNama'];
@@ -25,17 +38,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $MasaKerja = $conn->real_escape_string($MasaKerja);
     $PasswordBaru = $conn->real_escape_string($PasswordBaru);
 
-     // Ambil IDKaryawan dari session
-     if (isset($_SESSION['IDKaryawan'])) {
+    // Ambil IDKaryawan dari session
+    if (isset($_SESSION['IDKaryawan'])) {
         $userID = $_SESSION['IDKaryawan'];
     } else {
         // Handle case when session IDKaryawan is not set
         // Redirect to login page or handle error
-        exit("User session not found. Please login.");
+        $_SESSION['error_message'] = "User session not found. Please login.";
+        header("Location: ../view/login.php");
+        exit();
+    }
+
+    // Ambil data karyawan dari database berdasarkan IDKaryawan
+    $employeeData = getEmployeeData($conn, $userID);
+
+    if (!$employeeData) {
+        $_SESSION['error_message'] = "Data karyawan tidak ditemukan.";
+        header("Location: ../view/profilView.php");
+        exit();
+    }
+
+    // Validasi input (contoh validasi, sesuaikan dengan kebutuhan Anda)
+    $errors = [];
+
+    if (empty($NamaKaryawan)) {
+        $errors[] = "Nama Karyawan harus diisi.";
+    }
+
+    if (empty($Email)) {
+        $errors[] = "Email harus diisi.";
+    } elseif (!filter_var($Email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = "Format email tidak valid.";
+    }
+
+    // Anda bisa tambahkan validasi lain sesuai kebutuhan seperti panjang password, dll.
+
+    if (!empty($errors)) {
+        $_SESSION['error_message'] = implode("<br>", $errors);
+        header("Location: ../view/profilView.php");
+        exit();
     }
 
     // Query untuk update profil
-    $sql = "UPDATE karyawan SET 
+    $updateSql = "UPDATE karyawan SET 
             NamaKaryawan = '$NamaKaryawan',
             Jabatan = '$Jabatan',
             NIK = '$NIK',
@@ -46,24 +91,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             MasaKerja = '$MasaKerja'
             WHERE IDKaryawan = '$userID'"; // Sesuaikan dengan ID Karyawan yang sedang login
 
-    if ($conn->query($sql) === TRUE) {
-        echo "Profil berhasil diperbarui.";
+    if ($conn->query($updateSql) === TRUE) {
+        $_SESSION['success_message'] = "Profil berhasil diperbarui.";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        $_SESSION['error_message'] = "Error: " . $updateSql . "<br>" . $conn->error;
     }
 
     // Jika ada perubahan password
-    if (!empty($password_baru)) {
-        $hashedPassword = password_hash($password_baru, PASSWORD_DEFAULT);
+    if (!empty($PasswordBaru)) {
+        $hashedPassword = password_hash($PasswordBaru, PASSWORD_DEFAULT);
         $updatePasswordSql = "UPDATE karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$userID'";
 
         if ($conn->query($updatePasswordSql) === TRUE) {
-            echo "Password berhasil diubah.";
+            $_SESSION['success_message'] .= " Password berhasil diubah.";
         } else {
-            echo "Error updating password: " . $conn->error;
+            $_SESSION['error_message'] .= " Error updating password: " . $conn->error;
         }
     }
 
     $conn->close();
 }
+
+// Redirect ke profilView.php setelah selesai operasi
+header("Location: ../view/profilView.php");
+exit();
 ?>

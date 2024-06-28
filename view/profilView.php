@@ -5,6 +5,15 @@
             <div class="foto-profil text-center">
                 <img src="../assets/img/profile.png" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px;">
             </div>
+            <?php
+            if (isset($_SESSION['error_message'])) {
+                echo '<div class="alert alert-danger mt-3">' . $_SESSION['error_message'] . '</div>';
+                unset($_SESSION['error_message']);
+            } elseif (isset($_SESSION['success_message'])) {
+                echo '<div class="alert alert-success mt-3">' . $_SESSION['success_message'] . '</div>';
+                unset($_SESSION['success_message']);
+            }
+            ?>
             <form class="edit-profil mt-3" action="../controllers/profilController.php" method="POST">
                 <div class="mb-3 row">
                     <label for="inputNama" class="col-sm-2 col-form-label">Nama :</label>
