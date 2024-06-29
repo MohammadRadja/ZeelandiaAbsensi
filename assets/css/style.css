@@ -1,3 +1,71 @@
+body {
+  height: 100vh;
+}
+
+/* Button  */
+.btn-login {
+  font-size: 1.2rem;
+  padding: 10px 30px;
+  background-color: rgb(232, 218, 71); /* Warna kuning sesuai permintaan */
+  border: none;
+  color: black; /* Warna teks hitam agar kontras */
+  border-radius: 5px;
+  text-decoration: none; /* Menghapus garis bawah default pada link */
+}
+.btn-login:hover {
+  background-color: rgba(232, 218, 71, 0.8); /* Efek transparansi saat hover */
+}
+
+.btn-danger {
+  background-color: #ff4500;
+  border-color: #ff4500;
+}
+
+.btn-danger:hover {
+  background-color: #ff6347;
+  border-color: #ff6347;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #545b62;
+}
+
+/* Index  */
+.background {
+  height: 100vh;
+  margin: 0;
+  background: linear-gradient(to top, rgb(70, 130, 180), rgb(232, 218, 71));
+}
+
+.index {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(to top, rgb(70, 130, 180), rgb(232, 218, 71));
+}
+
+.welcome-section {
+  text-align: center;
+  margin-bottom: 50px;
+}
+.welcome-section h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+.welcome-section p {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+}
+
 /* login & forgot */
 .login-form,
 .registrasi-form {
@@ -56,4 +124,25 @@
   color: red;
   font-size: 0.875rem;
   margin-top: 0.25rem;
+}
+
+/* Modal Logout  */
+.modal-content {
+  border-radius: 10px;
+  background-color: rgb(255, 236, 161);
+}
+
+.modal-header {
+  background-color: #ffc107 !important;
+  border-bottom: none;
+}
+
+.modal-footer {
+  background-color: rgb(255, 236, 161);
+  border-top: none;
+}
+
+.modal-title {
+  color: #333;
+  font-weight: bold;
 }

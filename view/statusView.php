@@ -8,6 +8,9 @@
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
                     <th>Status</th>
+                    <?php if (in_array($_SESSION['jabatan'], ['admin', 'manager', 'HRD'])): ?>
+                        <th>Aksi</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>

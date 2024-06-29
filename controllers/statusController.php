@@ -1,5 +1,5 @@
 <?php
-session_start(); // Pastikan session dimulai jika akan digunakan
+// session_start(); // Pastikan session dimulai jika akan digunakan
 
 require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
 
@@ -28,6 +28,28 @@ if (isset($_SESSION['IDKaryawan'])) {
     // Redirect to login page or handle error
     exit("User session not found. Please login.");
 }
+
+
+/*
+ Function Update Status Cuti (Admin,Manager & HRD) 
+*/
+function updateStatus($IDPengajuan, $newStatus) {
+    global $conn;
+    $query = "UPDATE pengajuancuti SET Status = '$newStatus' WHERE IDPengajuan = '$IDPengajuan'";
+    return $conn->query($query);
+}
+
+// POST Status Process
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['updateStatus'])) {
+    $IDPengajuan = $_POST['IDPengajuan'];
+    $newStatus = $_POST['newStatus'];
+    if (updateStatus($cutiID, $newStatus)) {
+        echo "Status cuti berhasil diubah.";
+    } else {
+        echo "Gagal mengubah status cuti.";
+    }
+}
+
 
 $conn->close();
 ?>

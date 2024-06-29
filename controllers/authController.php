@@ -5,18 +5,16 @@ require_once '../db/koneksi.php'; // Sesuaikan path ini dengan struktur proyek A
 $errors = array(); // Array untuk menyimpan pesan kesalahan
 $success = false; // Inisialisasi variabel $success
 
-/**
- * Fungsi untuk menghindari XSS (Cross-site Scripting)
- * @param string $input Input dari user
- * @return string Input yang sudah disanitasi
- */
+/*
+Function Secure untuk menghindari XSS (Cross-site Scripting)
+*/
 function sanitizeInput($input) {
     global $conn;
     return htmlspecialchars(stripslashes(trim($conn->real_escape_string($input))));
 }
 
-/**
- * Fungsi untuk memproses login
+/*
+  Function Login
  */
 function processLogin() {
     global $conn, $errors, $success;
@@ -65,9 +63,8 @@ function processLogin() {
     exit();
 }
 
-/**
- * Fungsi untuk memvalidasi input registrasi sebelum diproses
- * @return bool True jika valid, False jika ada kesalahan
+/*
+ Function Validasi Input Registrasi
  */
 function validateRegistrationInput() {
     global $errors, $conn;
@@ -103,8 +100,8 @@ function validateRegistrationInput() {
     return empty($errors); // Return true jika tidak ada error
 }
 
-/**
- * Fungsi untuk memproses registrasi
+/*
+ Function Registrasi Process
  */
 function processRegistration() {
     global $conn, $errors;
@@ -139,7 +136,17 @@ function processRegistration() {
     }
 }
 
-// Memproses permintaan POST
+/*
+ Function Logout
+*/
+function processLogout() {
+    session_unset();
+    session_destroy();
+    header("Location: ../view/loginView.php");
+    exit();
+}
+
+//POST Process
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['login'])) {
         processLogin();
@@ -148,12 +155,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Logout
+//Logout Process
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
-    session_unset();
-    session_destroy();
-    header("Location: ../view/loginView.php");
-    exit();
+    processLogout();
 }
 
 $conn->close();
