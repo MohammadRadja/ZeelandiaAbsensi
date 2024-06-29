@@ -2,6 +2,8 @@
 session_start();
 require_once '../db/koneksi.php'; // Pastikan path ini benar
 
+$userID = $_SESSION['IDKaryawan'];
+
 // Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
 function getEmployeeData($conn, $userID) {
     $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$userID'";
@@ -12,6 +14,36 @@ function getEmployeeData($conn, $userID) {
     } else {
         return null;
     }
+}
+
+
+// Ambil IDKaryawan dari session
+if (isset($_SESSION['IDKaryawan'])) {
+    $userID = $_SESSION['IDKaryawan'];
+
+    // Ambil data karyawan dari database berdasarkan IDKaryawan menggunakan fungsi getEmployeeData
+    $employeeData = getEmployeeData($conn, $userID);
+
+    if (!$employeeData) {
+        $_SESSION['error_message'] = "Data karyawan tidak ditemukan.";
+        header("Location: ../view/login.php");
+        exit();
+    }
+
+    // Assign data karyawan ke variabel untuk ditampilkan di form
+    $currentNama = $employeeData['NamaKaryawan'];
+    $currentJabatan = $employeeData['Jabatan'];
+    $currentNIK = $employeeData['NIK'];
+    $currentAlamat = $employeeData['Alamat'];
+    $currentEmail = $employeeData['Email'];
+    $currentNoTelp = $employeeData['NoTelp'];
+    $currentTanggalBergabung = $employeeData['TanggalBergabung'];
+    $currentMasaKerja = $employeeData['MasaKerja'];
+} else {
+    // Handle case when session IDKaryawan is not set
+    $_SESSION['error_message'] = "User session not found. Please login.";
+    header("Location: ../view/loginView.php");
+    exit();
 }
 
 // Handle POST request untuk update profil
