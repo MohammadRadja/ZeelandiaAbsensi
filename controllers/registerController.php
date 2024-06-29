@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Username already exists. Please choose a different username.";
     } else {
         // Insert the new user into the database
-        $sql = "INSERT INTO karyawan (IDKaryawan, NamaKaryawan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', '$Username', '$hashedPassword')";
+        $sql = "INSERT INTO karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
 
         if ($conn->query($sql) === TRUE) {
             header("Location: ../view/loginView.php");

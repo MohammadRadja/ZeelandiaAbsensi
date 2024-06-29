@@ -1,3 +1,11 @@
+<?php
+session_start();
+$userID = isset($_SESSION['IDKaryawan']) ? $_SESSION['IDKaryawan'] : '';
+$jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
+
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -21,24 +29,39 @@
             </button>
             <div class="collapse navbar-collapse " id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" href="dashboardView.php">DASHBOARD</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="profilView.php">PROFILE</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="pengajuanView.php">PENGAJUAN CUTI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="laporanView.php">LAPORAN CUTI</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">LOG OUT</a>
-                    </li>
+                <?php if ($jabatan == 'karyawan') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="dashboardView.php">DASHBOARD</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profilView.php">PROFILE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pengajuanView.php">PENGAJUAN CUTI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="laporanView.php">LAPORAN CUTI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../controllers/authController.php">LOG OUT</a>
+                        </li>
+                    <?php } elseif ($jabatan == 'hrd' || $jabatan == 'manager') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profilView.php">PROFILE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="laporanView.php">LAPORAN CUTI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="../controllers/authController.php">LOG OUT</a>
+                        </li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>

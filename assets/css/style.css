@@ -2,7 +2,7 @@
 .login-form,
 .registrasi-form {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   color: #fff;
   background: linear-gradient(to top, rgb(70, 130, 180), rgb(232, 218, 71));
   background-repeat: no-repeat;

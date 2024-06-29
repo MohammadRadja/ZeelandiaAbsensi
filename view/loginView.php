@@ -10,11 +10,11 @@
 </head>
 <body>
     <section class="login-form">
-        <div class="container ">
+        <div class="container">
             <div class="row justify-content-center">
                 <div class="card-wrapper">
                     <div class="brand text-center mt-5">
-                        <img src="../assets/img/logo.png" alt="logo" >
+                        <img src="../assets/img/logo.png" alt="logo">
                     </div>
                     <?php if (!empty($errors)) : ?>
                         <div class="alert alert-danger">
@@ -28,14 +28,13 @@
                             <p>Login berhasil! Mengarahkan...</p>
                         </div>
                     <?php endif; ?>
-                    <form method="POST" action="../controllers/loginController.php" class="my-login-validation" novalidate="">
+                    <form method="POST" action="../controllers/authController.php" class="my-login-validation" novalidate="">
                         <div class="form-group m-4">
                             <input id="IDkaryawan" type="text" class="form-control" name="IDKaryawan" value="" placeholder="ID Karyawan" required autofocus>
                         </div>
                         <div class="form-group m-4">
                             <input id="Password" type="password" class="form-control" name="Password" placeholder="Password" required data-eye>
                         </div>
-
                         <div class="form-group text-center m-4">
                             <button style="width: 100%;" type="submit" class="btn btn-primary btn-block">
                                 Log in
@@ -43,7 +42,6 @@
                             <span><a href="../view/forgotpassView.php">Forgot Password ?</a></span>
                         </div>
                     </form>
-
                     <div class="footer">
                         <div class="mt-4 text-center">
                             Don't have an account? <a href="../view/registerView.php">Sign Up</a>
@@ -53,7 +51,6 @@
             </div>
         </div>
     </section>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>

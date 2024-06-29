@@ -1,14 +1,20 @@
 <?php
 session_start();
-require_once '../db/koneksi.php'; // Pastikan path ini benar
+require_once '../db/koneksi.php'; // Sesuaikan path ini dengan struktur proyek Anda
 
 $errors = array(); // Array untuk menyimpan pesan kesalahan
 $success = false; // Inisialisasi variabel $success
 
+// Fungsi untuk menghindari XSS (Cross-site Scripting)
+function sanitizeInput($input) {
+    global $conn;
+    return htmlspecialchars(stripslashes(trim($conn->real_escape_string($input))));
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
-    $IDKaryawan = trim($_POST['IDKaryawan']);
-    $Password = trim($_POST['Password']);
+    $IDKaryawan = sanitizeInput($_POST['IDKaryawan']);
+    $Password = sanitizeInput($_POST['Password']);
 
     // Validasi input
     if (empty($IDKaryawan)) {
@@ -19,11 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (empty($errors)) {
-        // Protect against SQL injection
-        $IDKaryawan = $conn->real_escape_string($IDKaryawan);
-        $Password = $conn->real_escape_string($Password);
-
-        // Hash the password using md5
+        // Hash the password using md5 (Ini hanya untuk contoh, sebaiknya gunakan metode hashing yang lebih aman)
         $hashedPassword = md5($Password);
 
         // Query to fetch the user
@@ -36,17 +38,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Verify password
             if ($hashedPassword == $row['Password']) {
                 $_SESSION['IDKaryawan'] = $row['IDKaryawan'];
-                $_SESSION['Username'] = $row['Username'];
+                $_SESSION['jabatan'] = $row['Jabatan'];
                 $success = true; // Set success to true on successful login
-                header("Location: ../view/dashboardview.php"); // Redirect to homepage or dashboard
+                header("Location: ../view/dashboardView.php"); // Redirect to homepage or dashboard
                 exit();
             } else {
                 $errors[] = "ID Karyawan & Password salah.";
             }
         } else {
-            $errors[] = "ID Karyawan & Password salah";
+            $errors[] = "ID Karyawan & Password salah.";
         }
     }
+}
+
+// Logout
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+    session_start();
+    session_unset();
+    session_destroy();
+    header("Location: ../view/loginView.php");
+    exit();
 }
 
 $conn->close();
