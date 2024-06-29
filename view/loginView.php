@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Ambil pesan error dari session jika ada
+$errors = isset($_SESSION['login_errors']) ? $_SESSION['login_errors'] : array();
+
+// Hapus session errors setelah ditampilkan
+unset($_SESSION['login_errors']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,27 +26,25 @@
                     <div class="brand text-center mt-5">
                         <img src="../assets/img/logo.png" alt="logo">
                     </div>
-                    <?php if (!empty($errors)) : ?>
-                        <div class="alert alert-danger">
-                            <?php foreach ($errors as $error) : ?>
-                                <p><?php echo $error; ?></p>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                    <?php if (isset($success) && $success) : ?>
-                        <div class="alert alert-success">
-                            <p>Login berhasil! Mengarahkan...</p>
-                        </div>
-                    <?php endif; ?>
-                    <form method="POST" action="../controllers/authController.php" class="my-login-validation" novalidate="">
+                    <form method="POST" action="../controllers/authController.php" class="my-login-validation" novalidate>
                         <div class="form-group m-4">
-                            <input id="IDkaryawan" type="text" class="form-control" name="IDKaryawan" value="" placeholder="ID Karyawan" required autofocus>
+                            <input id="IDKaryawan" type="text" class="form-control <?php echo isset($errors['IDKaryawan']) ? 'is-invalid' : ''; ?>" name="IDKaryawan" value="" placeholder="ID Karyawan" required autofocus>
+                            <?php if (isset($errors['IDKaryawan'])) : ?>
+                                <div class="invalid-feedback">
+                                    <?php echo $errors['IDKaryawan']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="form-group m-4">
-                            <input id="Password" type="password" class="form-control" name="Password" placeholder="Password" required data-eye>
+                            <input id="Password" type="password" class="form-control <?php echo isset($errors['Password']) ? 'is-invalid' : ''; ?>" name="Password" placeholder="Password" required data-eye>
+                            <?php if (isset($errors['Password'])) : ?>
+                                <div class="invalid-feedback">
+                                    <?php echo $errors['Password']; ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                         <div class="form-group text-center m-4">
-                            <button style="width: 100%;" type="submit" class="btn btn-primary btn-block">
+                            <button style="width: 100%;" type="submit" name="login" class="btn btn-primary btn-block">
                                 Log in
                             </button>
                             <span><a href="../view/forgotpassView.php">Forgot Password ?</a></span>

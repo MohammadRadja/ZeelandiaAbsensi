@@ -5,23 +5,32 @@ require_once '../db/koneksi.php'; // Sesuaikan path ini dengan struktur proyek A
 $errors = array(); // Array untuk menyimpan pesan kesalahan
 $success = false; // Inisialisasi variabel $success
 
-// Fungsi untuk menghindari XSS (Cross-site Scripting)
+/**
+ * Fungsi untuk menghindari XSS (Cross-site Scripting)
+ * @param string $input Input dari user
+ * @return string Input yang sudah disanitasi
+ */
 function sanitizeInput($input) {
     global $conn;
     return htmlspecialchars(stripslashes(trim($conn->real_escape_string($input))));
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+/**
+ * Fungsi untuk memproses login
+ */
+function processLogin() {
+    global $conn, $errors, $success;
+
     // Ambil data dari form
     $IDKaryawan = sanitizeInput($_POST['IDKaryawan']);
     $Password = sanitizeInput($_POST['Password']);
 
     // Validasi input
     if (empty($IDKaryawan)) {
-        $errors[] = "ID Karyawan harus diisi.";
+        $errors['IDKaryawan'] = "ID Karyawan harus diisi.";
     }
     if (empty($Password)) {
-        $errors[] = "Password harus diisi.";
+        $errors['Password'] = "Password harus diisi.";
     }
 
     if (empty($errors)) {
@@ -43,17 +52,104 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 header("Location: ../view/dashboardView.php"); // Redirect to homepage or dashboard
                 exit();
             } else {
-                $errors[] = "ID Karyawan & Password salah.";
+                $errors['general'] = "ID Karyawan & Password salah.";
             }
         } else {
-            $errors[] = "ID Karyawan & Password salah.";
+            $errors['general'] = "ID Karyawan & Password salah.";
         }
+    }
+
+    // Simpan pesan kesalahan ke session
+    $_SESSION['login_errors'] = $errors;
+    header("Location: ../view/loginView.php");
+    exit();
+}
+
+/**
+ * Fungsi untuk memvalidasi input registrasi sebelum diproses
+ * @return bool True jika valid, False jika ada kesalahan
+ */
+function validateRegistrationInput() {
+    global $errors, $conn;
+
+    // Ambil nilai dari $_POST
+    $IDKaryawan = isset($_POST['IDKaryawan']) ? intval($_POST['IDKaryawan']) : 0; // intval untuk memastikan nilai adalah integer
+    $Fullname = sanitizeInput($_POST['Fullname']);
+    $Username = sanitizeInput($_POST['Username']);
+    $Password = sanitizeInput($_POST['Password']);
+
+    // Validasi input
+    if (empty($IDKaryawan)) {
+        $errors['IDKaryawan'] = "ID Karyawan harus diisi.";
+    }
+    if (empty($Fullname)) {
+        $errors['Fullname'] = "Nama lengkap harus diisi.";
+    }
+    if (empty($Username)) {
+        $errors['Username'] = "Username harus diisi.";
+    }
+    if (empty($Password)) {
+        $errors['Password'] = "Password harus diisi.";
+    }
+
+    // Cek apakah username sudah digunakan
+    $checkUsernameQuery = "SELECT * FROM karyawan WHERE Username = '$Username'";
+    $checkResult = $conn->query($checkUsernameQuery);
+
+    if ($checkResult && $checkResult->num_rows > 0) {
+        $errors['Username'] = "Username sudah digunakan. Silakan pilih username lain.";
+    }
+
+    return empty($errors); // Return true jika tidak ada error
+}
+
+/**
+ * Fungsi untuk memproses registrasi
+ */
+function processRegistration() {
+    global $conn, $errors;
+
+    // Validasi input sebelum memproses
+    if (!validateRegistrationInput()) {
+        $_SESSION['register_errors'] = $errors; // Simpan pesan kesalahan ke session
+        header("Location: ../view/registerView.php"); // Redirect kembali ke halaman registrasi
+        exit();
+    }
+
+    // Ambil nilai dari $_POST setelah divalidasi
+    $IDKaryawan = intval($_POST['IDKaryawan']);
+    $Fullname = sanitizeInput($_POST['Fullname']);
+    $Username = sanitizeInput($_POST['Username']);
+    $Password = sanitizeInput($_POST['Password']);
+
+    // Hash the password using password_hash
+    $hashedPassword = password_hash($Password, PASSWORD_DEFAULT);
+
+    // Insert the new user into the database
+    $sql = "INSERT INTO karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
+
+    if ($conn->query($sql) === TRUE) {
+        header("Location: ../view/loginView.php");
+        exit();
+    } else {
+        $errors['general'] = "Error: " . $sql . "<br>" . $conn->error;
+        $_SESSION['register_errors'] = $errors; // Simpan pesan kesalahan ke session
+        header("Location: ../view/registerView.php"); // Redirect kembali ke halaman registrasi
+        exit();
+    }
+}
+
+// Memproses permintaan POST
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST['login'])) {
+        processLogin();
+    } elseif (isset($_POST['register'])) {
+        processRegistration();
     }
 }
 
 // Logout
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
-    session_start();
     session_unset();
     session_destroy();
     header("Location: ../view/loginView.php");
@@ -61,7 +157,3 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 }
 
 $conn->close();
-
-// Sertakan view setelah pemrosesan form
-include '../view/loginView.php';
-?>

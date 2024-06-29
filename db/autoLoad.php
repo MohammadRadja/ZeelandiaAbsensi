@@ -13,9 +13,9 @@ $uri_segment = explode("/", trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH
 // var_dump($uri_segment);
 
 // Memeriksa status login
-if (isset($_SESSION['status']) && $_SESSION['status'] == 'login') {
+if (isset($_SESSION['IDKaryawan']) && $_SESSION['Password'] == 'login') {
     // Pastikan segmen URI tersedia sebelum digunakan
-    $user_level = $_SESSION['level'];
+    $user_level = $_SESSION['Jabatan'];
     $uri_level = isset($uri_segment[1]) ? $uri_segment[1] : null; // Indeks 1 disesuaikan dengan URI setelah trim
     
     // Validasi akses pengguna berdasarkan level
@@ -29,7 +29,7 @@ if (isset($_SESSION['status']) && $_SESSION['status'] == 'login') {
 } else {
     // Redirect ke halaman login jika belum login
     $_SESSION['login_error'] = "Silahkan login terlebih dahulu.";
-    header('Location: ' . $url_based . '/login.php');
+    header('Location: ' . $url_based . '/view/loginView.php');
     exit;
 }
 ?>
