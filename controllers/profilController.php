@@ -1,6 +1,9 @@
 <?php
 require_once '../db/koneksi.php'; // Pastikan path ini benar
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $userID = $_SESSION['IDKaryawan'];
 
 $currentNama = '';
@@ -12,8 +15,6 @@ $currentNoTelp = '';
 $currentTanggalBergabung = '';
 $currentMasaKerja = '';
 
-var_dump($currentNama); // atau
-echo $currentNama;
 // Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
 function getEmployeeData($conn, $userID) {
     $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$userID'";
@@ -153,9 +154,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    $conn->close();
+    header("Location: ../view/profilView.php");
+    exit();
 }
 
+$conn->close();
 // Redirect ke profilView.php setelah selesai operasi
 
 ?>
