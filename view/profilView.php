@@ -60,8 +60,11 @@
             </div>
             <div class="mb-3 row">
                 <label for="inputMasaKerja" class="col-sm-2 col-form-label">Masa Kerja :</label>
-                <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputMasaKerja" name="inputMasaKerja" placeholder="Masa Kerja" value="<?php echo htmlspecialchars($currentMasaKerja); ?>">
+                <div class="col-sm-2">
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="inputMasaKerja" name="inputMasaKerja" placeholder="Masa Kerja" value="<?php echo htmlspecialchars($currentMasaKerja); ?>">
+                        <span class="input-group-text">Tahun</span>
+                    </div>
                 </div>
             </div>
             <div class="mb-3 row">
