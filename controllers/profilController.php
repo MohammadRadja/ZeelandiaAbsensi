@@ -1,9 +1,19 @@
 <?php
-session_start();
 require_once '../db/koneksi.php'; // Pastikan path ini benar
-
+session_start();
 $userID = $_SESSION['IDKaryawan'];
 
+$currentNama = '';
+$currentJabatan = '';
+$currentNIK = '';
+$currentAlamat = '';
+$currentEmail = '';
+$currentNoTelp = '';
+$currentTanggalBergabung = '';
+$currentMasaKerja = '';
+
+var_dump($currentNama); // atau
+echo $currentNama;
 // Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
 function getEmployeeData($conn, $userID) {
     $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$userID'";
@@ -31,20 +41,22 @@ if (isset($_SESSION['IDKaryawan'])) {
     }
 
     // Assign data karyawan ke variabel untuk ditampilkan di form
-    $currentNama = $employeeData['NamaKaryawan'];
-    $currentJabatan = $employeeData['Jabatan'];
-    $currentNIK = $employeeData['NIK'];
-    $currentAlamat = $employeeData['Alamat'];
-    $currentEmail = $employeeData['Email'];
-    $currentNoTelp = $employeeData['NoTelp'];
-    $currentTanggalBergabung = $employeeData['TanggalBergabung'];
-    $currentMasaKerja = $employeeData['MasaKerja'];
+    $currentNama = isset($employeeData['NamaKaryawan']) ? htmlspecialchars($employeeData['NamaKaryawan']) : '';
+    $currentJabatan = isset($employeeData['Jabatan']) ? htmlspecialchars($employeeData['Jabatan']) : '';
+    $currentNIK = isset($employeeData['NIK']) ? htmlspecialchars($employeeData['NIK']) : '';
+    $currentAlamat = isset($employeeData['Alamat']) ? htmlspecialchars($employeeData['Alamat']) : '';
+    $currentEmail = isset($employeeData['Email']) ? htmlspecialchars($employeeData['Email']) : '';
+    $currentNoTelp = isset($employeeData['NoTelp']) ? htmlspecialchars($employeeData['NoTelp']) : '';
+    $currentTanggalBergabung = isset($employeeData['TanggalBergabung']) ? htmlspecialchars($employeeData['TanggalBergabung']) : '';
+    $currentMasaKerja = isset($employeeData['MasaKerja']) ? htmlspecialchars($employeeData['MasaKerja']) : '';    
 } else {
     // Handle case when session IDKaryawan is not set
     $_SESSION['error_message'] = "User session not found. Please login.";
     header("Location: ../view/loginView.php");
     exit();
 }
+
+
 
 // Handle POST request untuk update profil
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -145,6 +157,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Redirect ke profilView.php setelah selesai operasi
-header("Location: ../view/profilView.php");
-exit();
+
 ?>
