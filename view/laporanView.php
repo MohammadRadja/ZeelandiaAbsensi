@@ -1,4 +1,5 @@
 <?php include('../template/header.php'); ?>
+<?php include('../controllers/laporanController.php')?>
 <section class="lap-cuti mt-5">
     <div class="container ">
         <h2 class="bg-warning p-1">LAPORAN CUTI</h2>

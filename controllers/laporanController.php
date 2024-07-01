@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 
 require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
 
@@ -7,20 +7,26 @@ require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
 $laporanData = array();
 $rekapData = array();
 
-// Retrieve user ID from session
-if (isset($_SESSION['IDKaryawan'])) {
+// Retrieve user role and ID from session
+if (isset($_SESSION['IDKaryawan']) && isset($_SESSION['jabatan'])) {
     $userID = $_SESSION['IDKaryawan'];
+    $userRole = $_SESSION['jabatan'];
 
-     // Query untuk laporan cuti dari view LaporanCuti
-     $laporanQuery = "SELECT * FROM LaporanCuti WHERE IDKaryawan = '$userID'";
-    
-     // Logging query
-     error_log("Laporan Query: " . $laporanQuery);
- 
-     $laporanResult = $conn->query($laporanQuery);
- 
+    // Query untuk laporan cuti dari view LaporanCuti
+    if ($userRole === 'hrd' && 'manager') {
+        // HRD melihat semua laporan cuti
+        $laporanQuery = "SELECT * FROM LaporanCuti";
+    } else {
+        // Selain HRD melihat laporan cuti mereka sendiri
+        $laporanQuery = "SELECT * FROM LaporanCuti WHERE IDKaryawan = '$userID'";
+    }
 
-     if ($laporanResult) {
+    // Logging query
+    error_log("Laporan Query: " . $laporanQuery);
+
+    $laporanResult = $conn->query($laporanQuery);
+
+    if ($laporanResult) {
         if ($laporanResult->num_rows > 0) {
             while ($row = $laporanResult->fetch_assoc()) {
                 $laporanData[] = $row;
@@ -35,13 +41,19 @@ if (isset($_SESSION['IDKaryawan'])) {
     }
 
     // Query untuk rekapitulasi laporan cuti per bulan
-    $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti WHERE IDKaryawan = '$userID' GROUP BY MONTH(TanggalAwal)";
-    
+    if ($userRole === 'hrd' && 'manager') {
+        // HRD melihat semua rekapitulasi laporan cuti
+        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti GROUP BY MONTH(TanggalAwal)";
+    } else {
+        // Selain HRD melihat rekapitulasi laporan cuti mereka sendiri
+        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti WHERE IDKaryawan = '$userID' GROUP BY MONTH(TanggalAwal)";
+    }
+
     // Logging query
     error_log("Rekap Query: " . $rekapQuery);
 
     $rekapResult = $conn->query($rekapQuery);
-    
+
     if ($rekapResult) {
         if ($rekapResult->num_rows > 0) {
             while ($row = $rekapResult->fetch_assoc()) {
@@ -64,7 +76,6 @@ if (isset($_SESSION['IDKaryawan'])) {
         echo "Error: " . $rekapQuery . "<br>" . $conn->error;
     }
 } else {
-    
     exit("User session not found. Please login.");
 }
 
@@ -72,5 +83,5 @@ if (isset($_SESSION['IDKaryawan'])) {
 $conn->close();
 
 // Include view file
-include('../view/laporanView.php');
+// include('../view/laporanView.php');
 ?>

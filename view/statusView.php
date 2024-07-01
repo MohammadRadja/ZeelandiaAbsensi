@@ -5,12 +5,17 @@
         <table class="table table-bordered table-bordered-black" style="color:black;">
             <thead>
                 <tr>
+                <?php if ($_SESSION['jabatan'] === 'hrd' ){ ?>
+                        <th>nama</th>
+                    <?php } ?>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
                     <th>Status</th>
-                    <?php if (in_array($_SESSION['jabatan'], ['admin', 'manager', 'HRD'])): ?>
+                    <?php if ($_SESSION['jabatan'] === 'hrd' ){ ?>
                         <th>Aksi</th>
-                    <?php endif; ?>
+                        <th>ubah status</th>
+
+                    <?php } ?>
                 </tr>
             </thead>
             <tbody>
