@@ -1,4 +1,5 @@
 <?php include('../template/header.php'); ?>
+<?php include('../controllers/profilController.php')?>
     <section class="profil">
         <div class="container pt-5">
             <h2 class="bg-warning p-1">PENGAJUAN CUTI</h2>
@@ -6,19 +7,19 @@
                 <div class="mb-3 row">
                     <label for="inputNama" class="col-sm-2 col-form-label">Nama :</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputNama" name="inputNama" placeholder="Nama">
+                        <input type="text" class="form-control" id="inputNama" name="inputNama" value="<?php echo $currentNama; ?>" placeholder="Nama" disabled>
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="inputJabatan" class="col-sm-2 col-form-label">Jabatan :</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="inputJabatan" name="inputJabatan" placeholder="Jabatan">
+                        <input type="text" class="form-control" id="inputJabatan" name="inputJabatan" value="<?php echo $currentJabatan; ?>" placeholder="Jabatan" disabled>
                     </div>
                 </div>
                 <div class="mb-3 row">
                     <label for="inputNIK" class="col-sm-2 col-form-label">NIK :</label>
                     <div class="col-sm-10">
-                        <input type="number" class="form-control" id="inputNIK" name="inputNIK" placeholder="NIK">
+                        <input type="number" class="form-control" id="inputNIK" name="inputNIK" value="<?php echo $currentNIK; ?>" placeholder="NIK" disabled>
                     </div>
                 </div>
                 <div class="mb-3 row">
