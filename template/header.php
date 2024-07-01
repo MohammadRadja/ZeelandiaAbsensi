@@ -37,9 +37,6 @@ $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
                             <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="laporanView.php">LAPORAN CUTI</a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">LOG OUT</a>
                         </li>
                     <?php } elseif ($jabatan == 'hrd' || $jabatan == 'manager') { ?>

@@ -18,14 +18,14 @@
                     </div>
                     <div class="information text-center mt-5" style="color:#000;">
                         <img src="../assets/img/lock.png" alt="logo">
-                        <p class="fs-5 fw-bold">Enter your email, phone, or username and we'll send you a new password</p>
+                        <p class="fs-5 fw-bold">Masukkan email, telepon, atau nama pengguna Anda dan kami akan mengirimkan kata sandi baru</p>
                     </div>
                     <form id="forgotPassForm" method="POST" action="../controllers/forgotpassController.php" class="my-login-validation">
                         <div class="form-group">
                             <input id="ForgotPass" type="text" class="form-control" name="ForgotPass" value="" placeholder="ID Karyawan, Email, or Username" required>
                         </div>
                         <div class="form-group">
-                            <input id="ForgotPass" type="password" class="form-control" name="newPassword" required >
+                            <input id="ForgotPass" type="password" class="form-control" name="newPassword" placeholder="Password Baru" required >
                         </div>
                         <div class="form-group text-center">
                             <button style="width: 100%;" type="submit" class="btn btn-primary" id="resetPasswordButton">

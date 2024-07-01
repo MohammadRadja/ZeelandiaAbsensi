@@ -38,17 +38,17 @@
         <table class="table table-bordered table-bordered-black" style="color:black;">
             <thead>
                 <tr>
-                    <th>Bulan<th>
+                    <th>Bulan</th>
                     <th>Catatan</th>
                 </tr>
             </thead>
             <tbody>
-            <?php
+                <?php
                 if (!empty($rekapData)) {
                     foreach ($rekapData as $rekap) {
                         echo "<tr>";
-                        echo "<td>" . $rekap['Bulan'] . "</td>";
-                        echo "<td>" . $rekap['Jumlah'] . "</td>";
+                        echo "<td>" . htmlspecialchars($rekap['Bulan']) . "</td>";
+                        echo "<td>Terdapat " . htmlspecialchars($rekap['Jumlah']) . " pengajuan cuti pada bulan ini</td>";
                         echo "</tr>";
                     }
                 } else {
