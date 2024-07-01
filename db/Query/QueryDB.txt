@@ -58,6 +58,7 @@ CREATE VIEW LaporanCuti AS
 SELECT 
     ROW_NUMBER() OVER (ORDER BY TanggalAwal) AS No,
     IDKaryawan,
+    NamaKaryawan,
     TanggalAwal,
     JenisCuti,
     DATEDIFF(TanggalAkhir, TanggalAwal) + 1 AS `Jumlah hari`

@@ -7,6 +7,7 @@
             <thead>
                 <tr>
                     <th>No</th>
+                    <th>Nama Karyawan</th>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
                     <th>Jumlah Hari</th>
@@ -19,6 +20,7 @@
                     foreach ($laporanData as $data) {
                         echo "<tr>";
                         echo "<td>" . $no++ . "</td>";
+                        echo "<td>" . $data['NamaKaryawan'] . "</td>";
                         echo "<td>" . $data['TanggalAwal'] . "</td>";
                         echo "<td>" . $data['JenisCuti'] . "</td>";
                         echo "<td>" . $data['Jumlah hari'] . "</td>"; // Sesuaikan dengan nama kolom yang benar

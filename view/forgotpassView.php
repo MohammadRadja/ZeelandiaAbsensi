@@ -11,7 +11,7 @@
     
 </head>
 <?php include('../controllers/forgotpassController.php')?>
-<body>
+<body class="background">
     <section class="forgot-form">
         <div class="container">
             <div class="row justify-content-center">

@@ -1,7 +1,15 @@
 <?php
-session_start();
+// Pastikan session_start hanya dipanggil jika belum ada sesi yang aktif
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 $userID = isset($_SESSION['IDKaryawan']) ? $_SESSION['IDKaryawan'] : '';
 $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
+// Ambil data notifikasi dari sesi, jika ada
+$notifications = isset($_SESSION['notifications']) ? $_SESSION['notifications'] : [];
+
+// Hapus notifikasi setelah ditampilkan
+unset($_SESSION['notifications']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,7 +26,11 @@ $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
     <nav class="navbar navbar-expand-lg navbar-light bg-warning">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><img src="../assets/img/logoNavbar.png" alt=""></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Tombol Lonceng Notifikasi -->
+            <?php if (!empty($notifications)): ?>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#notifModal"><i class="fas fa-bell navbar-toggler"></i></a>
+            <?php endif; ?>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse " id="navbarNav">
@@ -58,6 +70,26 @@ $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
         </div>
     </nav>
     
+    <!-- Modal Notifikasi -->
+    <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="notifModalLabel">Notifikasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php foreach ($notifications as $notification): ?>
+                        <p><?php echo htmlspecialchars($notification['message']); ?></p>
+                    <?php endforeach; ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Logout -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
         <div class="modal-dialog">

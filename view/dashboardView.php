@@ -1,6 +1,5 @@
 <?php include('../template/header.php'); ?>
 <?php
-session_start();
 
 // Periksa apakah sesi login ada
 if (!isset($_SESSION['IDKaryawan'])) {

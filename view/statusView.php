@@ -1,27 +1,95 @@
-<?php include('../template/header.php'); ?>
+<?php
+include('../template/header.php');
+include('../controllers/statusController.php');
+?>
+
 <section class="lap-cuti mt-5">
-    <div class="container ">
+    <div class="container">
         <h2 class="bg-warning p-1">STATUS CUTI</h2>
         <table class="table table-bordered table-bordered-black" style="color:black;">
             <thead>
                 <tr>
-                <?php if ($_SESSION['jabatan'] === 'hrd' ){ ?>
-                        <th>nama</th>
+                    <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])) { ?>
+                        <th>Nama</th>
                     <?php } ?>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
-                    <th>Status</th>
-                    <?php if ($_SESSION['jabatan'] === 'hrd' ){ ?>
+                    <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])) { ?>
                         <th>Aksi</th>
-                        <th>ubah status</th>
-
                     <?php } ?>
                 </tr>
             </thead>
             <tbody>
-            <?php include('../controllers/statusController.php'); ?>
+                <?php foreach ($data as $row): ?>
+                    <tr>
+                        <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])): ?>
+                            <td><?php echo htmlspecialchars($row["NamaKaryawan"]); ?></td>
+                        <?php endif; ?>
+                        <td><?php echo htmlspecialchars($row["TanggalAwal"]); ?></td>
+                        <td><?php echo htmlspecialchars($row["JenisCuti"]); ?></td>
+                        <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])): ?>
+                            <td>
+                                <form method='post'>
+                                    <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
+                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                </form>
+                            </td>
+                        <?php endif; ?>
+                    </tr>
+
+                    <!-- Modal Approve -->
+                    <div class='modal fade' id='modalApprove<?php echo $row["IDPengajuan"]; ?>' tabindex='-1' aria-labelledby='modalApproveLabel<?php echo $row["IDPengajuan"]; ?>' aria-hidden='true'>
+                        <div class='modal-dialog'>
+                            <div class='modal-content'>
+                                <div class='modal-header'>
+                                    <h5 class='modal-title' id='modalApproveLabel<?php echo $row["IDPengajuan"]; ?>'>Konfirmasi Setujui</h5>
+                                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                </div>
+                                <div class='modal-body'>
+                                    Apakah Anda yakin ingin menyetujui pengajuan cuti ini?
+                                </div>
+                                <div class='modal-footer'>
+                                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
+                                    <form method='post'>
+                                        <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
+                                        <button type='submit' name='approveStatus' class='btn btn-success'>Setujui</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal Reject -->
+                    <div class='modal fade' id='modalReject<?php echo $row["IDPengajuan"]; ?>' tabindex='-1' aria-labelledby='modalRejectLabel<?php echo $row["IDPengajuan"]; ?>' aria-hidden='true'>
+                        <div class='modal-dialog'>
+                            <div class='modal-content'>
+                                <div class='modal-header'>
+                                    <h5 class='modal-title' id='modalRejectLabel<?php echo $row["IDPengajuan"]; ?>'>Konfirmasi Tolak</h5>
+                                    <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+                                </div>
+                                <div class='modal-body'>
+                                    Apakah Anda yakin ingin menolak pengajuan cuti ini?
+                                </div>
+                                <div class='modal-footer'>
+                                    <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
+                                    <form method='post'>
+                                        <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
+                                        <button type='submit' name='rejectStatus' class='btn btn-danger'>Tolak</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+                <?php if (empty($data)): ?>
+                    <tr><td colspan='4'>Belum ada data pengajuan cuti.</td></tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
 </section>
-<?php include('../template/footer.php'); ?>
+
+<?php
+include('../template/footer.php');
+?>
