@@ -20,12 +20,15 @@
                         <img src="../assets/img/lock.png" alt="logo">
                         <p class="fs-5 fw-bold">Enter your email, phone, or username and we'll send you a new password</p>
                     </div>
-                    <form id="forgotPassForm" method="POST" action="../controllers/forgotpassController.php" class="my-login-validation" novalidate="">
+                    <form id="forgotPassForm" method="POST" action="../controllers/forgotpassController.php" class="my-login-validation">
                         <div class="form-group">
-                            <input id="ForgotPass" type="text" class="form-control" name="ForgotPass" value="" placeholder="ID Karyawan, Email, or Username" required autofocus>
+                            <input id="ForgotPass" type="text" class="form-control" name="ForgotPass" value="" placeholder="ID Karyawan, Email, or Username" required>
+                        </div>
+                        <div class="form-group">
+                            <input id="ForgotPass" type="password" class="form-control" name="newPassword" required >
                         </div>
                         <div class="form-group text-center">
-                            <button style="width: 100%;" type="submit" class="btn btn-primary btn-block" id="resetPasswordButton">
+                            <button style="width: 100%;" type="submit" class="btn btn-primary" id="resetPasswordButton">
                                 Reset Password
                             </button>
                         </div>
