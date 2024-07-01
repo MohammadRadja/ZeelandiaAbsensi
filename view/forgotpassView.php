@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forgot Password</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="icon" href="../assets/img/logo.png" type="image/png"> <!-- Favicon -->
+    <link rel="icon" href="../assets/img/logo.png" type="image/png">
+    
 </head>
+<?php include('../controllers/forgotpassController.php')?>
 <body>
     <section class="forgot-form">
         <div class="container">
@@ -20,12 +23,24 @@
                         <img src="../assets/img/lock.png" alt="logo">
                         <p class="fs-5 fw-bold">Masukkan email, telepon, atau nama pengguna Anda dan kami akan mengirimkan kata sandi baru</p>
                     </div>
+                    <?php
+                    if (isset($_SESSION['success_message'])) {
+                        echo "<p class='alert alert-success'>" . $_SESSION['success_message'] . "</p>";
+                        // Hapus pesan sukses dari sesi setelah ditampilkan
+                        unset($_SESSION['success_message']);
+                    }
+                    if(isset($_SESSION['error_message'])){
+                        echo "<p class='alert alert-danger'>" . $_SESSION['error_message'] . "</p>";
+                        // Hapus pesan sukses dari sesi setelah ditampilkan
+                        unset($_SESSION['error_message']);
+                    }
+                    ?>
                     <form id="forgotPassForm" method="POST" action="../controllers/forgotpassController.php" class="my-login-validation">
                         <div class="form-group">
                             <input id="ForgotPass" type="text" class="form-control" name="ForgotPass" value="" placeholder="ID Karyawan, Email, or Username" required>
                         </div>
                         <div class="form-group">
-                            <input id="ForgotPass" type="password" class="form-control" name="newPassword" placeholder="Password Baru" required >
+                            <input id="ForgotPass" type="password" class="form-control" name="newPassword" placeholder="Password Baru" required>
                         </div>
                         <div class="form-group text-center">
                             <button style="width: 100%;" type="submit" class="btn btn-primary" id="resetPasswordButton">
@@ -51,32 +66,33 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
 
     <!-- Script to handle form submission and response -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('forgotPassForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent form submission
-            var form = this;
-            var formData = new FormData(form);
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('forgotPassForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form submission
+                var form = this;
+                var formData = new FormData(form);
 
-            // Submit form using fetch
-            fetch(form.action, {
-                method: form.method,
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message); // Show success message
-                    form.reset();
-                } else {
-                    alert(data.error_message); // Show error message
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+                // Submit form using fetch
+                fetch(form.action, {
+                        method: form.method,
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert(data.message); // Show success message
+                            form.reset();
+                        } else {
+                            alert(data.error_message); // Show error message
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
             });
         });
-    });
-    </script>
+    </script> -->
 </body>
+
 </html>

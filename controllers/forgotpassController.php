@@ -17,16 +17,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Update password di database
         $updatePasswordQuery = "UPDATE karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$IDKaryawan'";
         if ($conn->query($updatePasswordQuery) === TRUE) {
-            header("Location: loginView.php");
+            $_SESSION['success_message'] = "Password berhasil direset. Silakan login dengan password baru Anda.";
+            header("Location: ../view/forgotpassView.php");
             exit();
-            echo "Password berhasil direset. Silakan login dengan password baru Anda.";
         } else {
             echo "Error: " . $updatePasswordQuery . "<br>" . $conn->error;
         }
     } else {
-        echo "ID Karyawan tidak ditemukan.";
+        $_SESSION['error_message'] = "ID tidak ditemukan";
+        header("Location: ../view/forgotpassView.php");
+        exit();
     }
 }
-
 $conn->close();
 ?>
