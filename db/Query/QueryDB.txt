@@ -1,6 +1,7 @@
 -- Membuat tabel Karyawan
 CREATE TABLE Karyawan (
     IDKaryawan INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
+    Foto VARCHAR(255) NOT NULL, -- Foto Karyawan
     NamaKaryawan VARCHAR(255) NOT NULL,  -- Nama karyawan
     Jabatan VARCHAR(100) NOT NULL,  -- Jabatan karyawan
     NIK VARCHAR(50) UNIQUE NOT NULL,  -- Nomor Induk Kependudukan, harus unik

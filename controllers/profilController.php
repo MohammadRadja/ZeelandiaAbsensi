@@ -6,6 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 $userID = $_SESSION['IDKaryawan'];
 
+$currentFoto = '../assets/img/profiles/profile.png'; // Default profile picture
 $currentNama = '';
 $currentJabatan = '';
 $currentNIK = '';
@@ -42,6 +43,7 @@ if (isset($_SESSION['IDKaryawan'])) {
     }
 
     // Assign data karyawan ke variabel untuk ditampilkan di form
+    $currentFoto = isset($employeeData['Foto']) ? htmlspecialchars($employeeData['Foto']) : $currentFoto;
     $currentNama = isset($employeeData['NamaKaryawan']) ? htmlspecialchars($employeeData['NamaKaryawan']) : '';
     $currentJabatan = isset($employeeData['Jabatan']) ? htmlspecialchars($employeeData['Jabatan']) : '';
     $currentNIK = isset($employeeData['NIK']) ? htmlspecialchars($employeeData['NIK']) : '';
@@ -57,11 +59,10 @@ if (isset($_SESSION['IDKaryawan'])) {
     exit();
 }
 
-
-
 // Handle POST request untuk update profil
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
+    $FotoProfil = $_FILES['inputFotoProfil'];
     $NamaKaryawan = $_POST['inputNama'];
     $Jabatan = $_POST['inputJabatan'];
     $NIK = $_POST['inputNIK'];
@@ -116,8 +117,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Format email tidak valid.";
     }
 
-    // Anda bisa tambahkan validasi lain sesuai kebutuhan seperti panjang password, dll.
+    // Validasi file upload
+    if ($FotoProfil['error'] == UPLOAD_ERR_OK) {
+        $targetDir = "../assets/img/profiles/";
+        $targetFile = $targetDir . basename($FotoProfil["name"]);
+        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
+        // Pastikan path file tidak kosong sebelum memanggil getimagesize
+        if (!empty($FotoProfil["tmp_name"])) {
+            $check = getimagesize($FotoProfil["tmp_name"]);
+            if ($check === false) {
+                $errors[] = "File bukan gambar.";
+            }
+        } else {
+            $errors[] = "File tidak ditemukan.";
+        }
+
+        // Periksa ukuran file
+        if ($FotoProfil["size"] > 500000) {
+            $errors[] = "Ukuran file terlalu besar. Maksimal 500KB.";
+        }
+
+        // Periksa format file
+        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+            $errors[] = "Hanya format JPG, JPEG, PNG & GIF yang diperbolehkan.";
+        }
+
+        // Jika tidak ada error, pindahkan file ke folder target
+        if (empty($errors)) {
+            if (!move_uploaded_file($FotoProfil["tmp_name"], $targetFile)) {
+                $errors[] = "Terjadi kesalahan saat mengunggah file.";
+            } else {
+                $currentFoto = $targetFile;
+            }
+        }
+    }
+
+    // Anda bisa tambahkan validasi lain sesuai kebutuhan seperti panjang password, dll.
     if (!empty($errors)) {
         $_SESSION['error_message'] = implode("<br>", $errors);
         header("Location: ../view/profilView.php");
@@ -126,6 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Query untuk update profil
     $updateSql = "UPDATE karyawan SET 
+            Foto = '$currentFoto',
             NamaKaryawan = '$NamaKaryawan',
             Jabatan = '$Jabatan',
             NIK = '$NIK',

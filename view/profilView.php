@@ -12,7 +12,7 @@ exit();
 <section class="profil">
         <h2 class="bg-warning p-1 text-center">PROFIL</h2>
         <div class="foto-profil text-center">
-            <img src="../assets/img/profile.png" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px;">
+            <img src="<?php echo htmlspecialchars($currentFoto); ?>" alt="Profile Picture" class="rounded-circle" style="width: 150px; height: 150px;">
         </div>
         <?php
         if (isset($_SESSION['error_message'])) {
@@ -79,6 +79,12 @@ exit();
                 <label for="inputPassword" class="col-sm-2 col-form-label">Ubah sandi :</label>
                 <div class="col-sm-10">
                     <input type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="Ubah sandi">
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputFotoProfil" class="col-sm-2 col-form-label">Foto Profil :</label>
+                <div class="col-sm-10">
+                    <input type="file" class="form-control" id="inputFotoProfil" name="inputFotoProfil" accept="image/*">
                 </div>
             </div>
             <div class="d-flex justify-content-center">
