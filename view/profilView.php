@@ -1,5 +1,13 @@
 <?php include('../template/header.php'); ?>
 <?php include('../controllers/profilController.php')?>
+<?php
+// Periksa apakah sesi login ada
+if (!isset($_SESSION['IDKaryawan'])) {
+// Jika tidak ada sesi login, arahkan ke halaman login
+header("Location: ../view/loginView.php");
+exit();
+}
+?>
 <div class="container pt-5">
 <section class="profil">
         <h2 class="bg-warning p-1 text-center">PROFIL</h2>

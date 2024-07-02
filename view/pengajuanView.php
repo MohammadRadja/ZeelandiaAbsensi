@@ -1,6 +1,14 @@
 <?php include('../template/header.php'); ?>
 <?php include('../controllers/profilController.php')?>
-    <section class="profil">
+<?php
+// Periksa apakah sesi login ada
+if (!isset($_SESSION['IDKaryawan'])) {
+// Jika tidak ada sesi login, arahkan ke halaman login
+header("Location: ../view/loginView.php");
+exit();
+}
+?>    
+<section class="profil">
         <div class="container pt-5">
             <h2 class="bg-warning p-1">PENGAJUAN CUTI</h2>
             <form class="edit-profil mt-3" action="../controllers/pengajuanController.php" method="POST" enctype="multipart/form-data">

@@ -1,8 +1,14 @@
 <?php
 include('../template/header.php');
 include('../controllers/statusController.php');
-?>
 
+// Periksa apakah sesi login ada
+if (!isset($_SESSION['IDKaryawan'])) {
+    // Jika tidak ada sesi login, arahkan ke halaman login
+    header("Location: ../view/loginView.php");
+    exit("Silahkan Login Terlebih Dahulu");
+}
+?>
 <section class="lap-cuti mt-5">
     <div class="container">
         <h2 class="bg-warning p-1">STATUS CUTI</h2>
@@ -14,6 +20,9 @@ include('../controllers/statusController.php');
                     <?php } ?>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
+                    <?php if ($jabatan == 'karyawan') { ?>
+                        <th>Status</th>
+                    <?php } ?>
                     <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])) { ?>
                         <th>Aksi</th>
                     <?php } ?>
@@ -27,13 +36,13 @@ include('../controllers/statusController.php');
                         <?php endif; ?>
                         <td><?php echo htmlspecialchars($row["TanggalAwal"]); ?></td>
                         <td><?php echo htmlspecialchars($row["JenisCuti"]); ?></td>
+                        <?php if ($jabatan == 'karyawan'): ?>
+                            <td><?php echo htmlspecialchars($row["Status"]); ?></td>
+                        <?php endif; ?>
                         <?php if (in_array($jabatan, ['hrd', 'admin', 'manager'])): ?>
                             <td>
-                                <form method='post'>
-                                    <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
-                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-                                </form>
+                                <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
                             </td>
                         <?php endif; ?>
                     </tr>
@@ -83,7 +92,7 @@ include('../controllers/statusController.php');
                     </div>
                 <?php endforeach; ?>
                 <?php if (empty($data)): ?>
-                    <tr><td colspan='4'>Belum ada data pengajuan cuti.</td></tr>
+                    <tr><td colspan='<?php echo in_array($jabatan, ['hrd', 'admin', 'manager']) ? 5 : 3; ?>'>Belum ada data pengajuan cuti.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

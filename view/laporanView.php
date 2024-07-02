@@ -1,5 +1,13 @@
 <?php include('../template/header.php'); ?>
 <?php include('../controllers/laporanController.php')?>
+<?php
+// Periksa apakah sesi login ada
+if (!isset($_SESSION['IDKaryawan'])) {
+// Jika tidak ada sesi login, arahkan ke halaman login
+header("Location: ../view/loginView.php");
+exit();
+}
+?>
 <section class="lap-cuti mt-5">
     <div class="container ">
         <h2 class="bg-warning p-1">LAPORAN CUTI</h2>
