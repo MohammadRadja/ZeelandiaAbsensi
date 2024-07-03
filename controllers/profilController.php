@@ -52,8 +52,7 @@ if (isset($_SESSION['IDKaryawan'])) {
 
     if (!$employeeData) {
         $_SESSION['error_message'] = "Data karyawan tidak ditemukan.";
-        header("Location: ../view/login.php");
-        exit();
+        echo '<script>window.location.href="../view/loginView.php";</script>';
     }
 
     // Assign data karyawan ke variabel untuk ditampilkan di form
@@ -69,8 +68,7 @@ if (isset($_SESSION['IDKaryawan'])) {
 } else {
     // Handle case when session IDKaryawan is not set
     $_SESSION['error_message'] = "User session not found. Please login.";
-    header("Location: ../view/loginView.php");
-    exit();
+    echo '<script>window.location.href="../view/loginView.php";</script>';
 }
 
 // Handle POST request untuk update profil
@@ -105,8 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Handle case when session IDKaryawan is not set
         // Redirect to login page or handle error
         $_SESSION['error_message'] = "User session not found. Please login.";
-        header("Location: ../view/login.php");
-        exit();
+        echo '<script>window.location.href="../view/loginView.php";</script>';
     }
 
     // Ambil data karyawan dari database berdasarkan IDKaryawan
@@ -120,7 +117,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Validasi input (contoh validasi, sesuaikan dengan kebutuhan Anda)
     $errors = [];
-
     if (empty($NamaKaryawan)) {
         $errors[] = "Nama Karyawan harus diisi.";
     }

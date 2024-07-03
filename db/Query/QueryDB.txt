@@ -3,14 +3,14 @@ CREATE TABLE Karyawan (
     IDKaryawan INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
     Foto VARCHAR(255), -- Foto Karyawan
     NamaKaryawan VARCHAR(255) NULL,  -- Nama karyawan
-    Jabatan VARCHAR(100) NULL,  -- Jabatan karyawan
+    Jabatan ENUM('karyawan', 'hrd', 'manager') NULL,  -- Jabatan karyawan
     NIK VARCHAR(50) UNIQUE NULL,  -- Nomor Induk Kependudukan, harus unik
     Email VARCHAR(255) UNIQUE NULL,  -- Email karyawan, harus unik
     TanggalLahir DATE NULL,  -- Tanggal lahir karyawan
     TanggalBergabung DATE NULL,  -- Tanggal bergabung dengan perusahaan
     Alamat TEXT NULL,  -- Alamat karyawan
     NoTelp VARCHAR(15) NULL,  -- Nomor telepon karyawan
-    MasaKerja INT NULL,  -- Kolom untuk menyimpan masa kerja
+    MasaKerja INT,  -- Kolom untuk menyimpan masa kerja
     Username VARCHAR(50) UNIQUE NULL,  -- Username untuk login, harus unik
     Password VARCHAR(255) NULL  -- Password untuk login
 );
@@ -44,7 +44,8 @@ SELECT
     NamaKaryawan,
     TanggalAwal,
     JenisCuti,
-    DATEDIFF(TanggalAkhir, TanggalAwal) + 1 AS `Jumlah hari`
+    DATEDIFF(TanggalAkhir, TanggalAwal) + 1 AS `Jumlah hari`,
+    Status
 FROM PengajuanCuti;
 
 

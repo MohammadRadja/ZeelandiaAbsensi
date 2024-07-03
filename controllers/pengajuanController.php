@@ -136,10 +136,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $conn->close();
-    header("Location: ../view/statusView.php");
-    exit();
+    echo '<script>window.location.href="../view/StatusView.php";</script>';
 } else {
     // Redirect to appropriate error page or handle accordingly
+    header("Location: ../view/pengajuanView.php");
     exit("Invalid request method.");
 }
 ?>

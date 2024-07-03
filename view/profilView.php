@@ -39,7 +39,7 @@ exit();
             <div class="mb-3 row">
                 <label for="inputNIK" class="col-sm-2 col-form-label">NIK :</label>
                 <div class="col-sm-10">
-                    <input type="number" class="form-control" id="inputNIK" name="inputNIK" value="<?php echo htmlspecialchars($currentNIK); ?>" placeholder="NIK">
+                    <input type="text" class="form-control" id="inputNIK" name="inputNIK" value="<?php echo htmlspecialchars($currentNIK); ?>" placeholder="NIK">
                 </div>
             </div>
             <div class="mb-3 row">
