@@ -1,13 +1,12 @@
 <?php
-// Pastikan session_start hanya dipanggil jika belum ada sesi yang aktif
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 $userID = isset($_SESSION['IDKaryawan']) ? $_SESSION['IDKaryawan'] : '';
 $jabatan = isset($_SESSION['jabatan']) ? $_SESSION['jabatan'] : '';
+
 // Ambil data notifikasi dari sesi, jika ada
 $notifications = isset($_SESSION['notifications']) ? $_SESSION['notifications'] : [];
-
 // Hapus notifikasi setelah ditampilkan
 unset($_SESSION['notifications']);
 ?>
@@ -26,13 +25,20 @@ unset($_SESSION['notifications']);
     <nav class="navbar navbar-expand-lg navbar-light bg-warning">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><img src="../assets/img/logoNavbar.png" alt=""></a>
-            <!-- Tombol Lonceng Notifikasi -->
-            <?php if (!empty($notifications)): ?>
-            <a href="#" data-bs-toggle="modal" data-bs-target="#notifModal"><i class="fas fa-bell navbar-toggler"></i></a>
-            <?php endif; ?>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- Navbar Toggler dan Notifikasi Icon -->
+            <div class="d-flex align-items-center">
+                <!-- Ikon Notifikasi -->
+                <?php if (!empty($notifications)): ?>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#notifModal" class="text-decoration-none text-reset me-3 d-lg-none">
+                    <i class="fas fa-bell"></i>
+                </a>
+                <?php endif; ?>
+
+                <!-- Toggler Navbar -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
             <div class="collapse navbar-collapse " id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                 <?php if ($jabatan == 'karyawan' || $jabatan == 'admin') { ?>
@@ -72,16 +78,24 @@ unset($_SESSION['notifications']);
     
     <!-- Modal Notifikasi -->
     <div class="modal fade" id="notifModal" tabindex="-1" aria-labelledby="notifModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header bg-info text-white">
                     <h5 class="modal-title" id="notifModalLabel">Notifikasi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <?php foreach ($notifications as $notification): ?>
-                        <p><?php echo htmlspecialchars($notification['message']); ?></p>
-                    <?php endforeach; ?>
+                <?php foreach ($notifications as $notification): ?>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="alert alert-info flex-grow-1 mb-0 me-3" role="alert">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            <span class="text-dark"><?php echo htmlspecialchars($notification['message']); ?></span>
+                        </div>
+                        <div class="text-muted">
+                            <small><?php echo date('d M Y', strtotime($notification['timestamp'])); ?></small>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
@@ -89,6 +103,7 @@ unset($_SESSION['notifications']);
             </div>
         </div>
     </div>
+
 
     <!-- Modal Logout -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">

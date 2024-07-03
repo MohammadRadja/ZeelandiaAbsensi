@@ -1,17 +1,34 @@
 <?php
-session_start(); // Pastikan session dimulai jika akan digunakan
-
 require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
 
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Fungsi untuk menambah notifikasi ke sesi
+function addNotification($message) {
+    if (!isset($_SESSION['notifications'])) {
+        $_SESSION['notifications'] = [];
+    }
+    $currentDateTime = date('Y-m-d H:i:s');
+    $_SESSION['notifications'][] = [
+        'message' => $message,
+        'timestamp' => $currentDateTime
+    ];
+}
+
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Ambil data dari form
-    $inputNama = $_POST['inputNama'];
-    $inputJabatan = $_POST['inputJabatan'];
-    $inputNIK = $_POST['inputNIK'];
-    $inputJenisCuti = $_POST['inputJenisCuti'];
-    $inputTanggalAwal = $_POST['inputTanggalAwal'];
-    $inputTanggalAkhir = $_POST['inputTanggalAkhir'];
-    $inputAlasanCuti = $_POST['inputAlasanCuti'];
+    // Ambil data dari form dan lakukan pengecekan apakah ada
+    $inputNama = isset($_POST['inputNama']) ? $_POST['inputNama'] : '';
+    $inputJabatan = isset($_POST['inputJabatan']) ? $_POST['inputJabatan'] : '';
+    $inputNIK = isset($_POST['inputNIK']) ? $_POST['inputNIK'] : '';
+    $inputJenisCuti = isset($_POST['inputJenisCuti']) ? $_POST['inputJenisCuti'] : '';
+    $inputTanggalAwal = isset($_POST['inputTanggalAwal']) ? $_POST['inputTanggalAwal'] : '';
+    $inputTanggalAkhir = isset($_POST['inputTanggalAkhir']) ? $_POST['inputTanggalAkhir'] : '';
+    $inputAlasanCuti = isset($_POST['inputAlasanCuti']) ? $_POST['inputAlasanCuti'] : '';
+    $inputAlasanCuti = isset($_POST['inputAlasanCuti']) ? $_POST['inputAlasanCuti'] : '';
 
     // Protect against SQL injection
     $inputNama = $conn->real_escape_string($inputNama);
@@ -27,12 +44,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $userID = $_SESSION['IDKaryawan'];
     } else {
         // Handle case when session IDKaryawan is not set
-        // Redirect to login page or handle error
-        exit("User session not found. Please login.");
+        $_SESSION['error_message'] = "User session not found. Please login.";
+        header("Location: ../view/loginView.php");
+        exit();
+    }
+
+    // Validasi form input
+    $errors = [];
+    if (empty($inputJenisCuti)) {
+        $errors[] = "Jenis cuti harus diisi.";
+    }
+    if (empty($inputTanggalAwal)) {
+        $errors[] = "Tanggal awal harus diisi.";
+    }
+    if (empty($inputTanggalAkhir)) {
+        $errors[] = "Tanggal akhir harus diisi.";
+    }
+    if (empty($inputAlasanCuti)) {
+        $errors[] = "Alasan cuti harus diisi.";
+    }
+
+    // Jika ada kesalahan, simpan dalam session dan kembali ke form
+    if (!empty($errors)) {
+        $_SESSION['error_message'] = implode("<br>", $errors);
+        header("Location: ../view/pengajuanView.php");
+        exit();
     }
 
      // Proses validasi file lampiran
-    if (isset($_FILES['inputLampiran'])) {
+     $lampiranFilename = null; // Default value
+     if (isset($_FILES['inputLampiran']) && $_FILES['inputLampiran']['error'] == 0) {
         $uploadOk = 1;
         $uploadDir = "../assets/lampiran/"; // Direktori tempat menyimpan file
         $targetFile = $uploadDir . basename($_FILES["inputLampiran"]["name"]);
@@ -40,49 +81,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Check if file already exists
         if (file_exists($targetFile)) {
-            echo "File sudah ada.";
+            $errors[] = "File sudah ada.";
             $uploadOk = 0;
         }
 
         // Check file size (max 5MB)
         if ($_FILES["inputLampiran"]["size"] > 5 * 1024 * 1024) {
-            echo "File terlalu besar.";
+            $errors[] = "File terlalu besar.";
             $uploadOk = 0;
         }
 
         // Allow certain file formats
         $allowedTypes = array('pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png');
         if (!in_array($fileType, $allowedTypes)) {
-            echo "Format file tidak diizinkan.";
+            $errors[] = "Format file tidak diizinkan.";
             $uploadOk = 0;
         }
 
         // Check if $uploadOk is set to 0 by an error
         if ($uploadOk == 0) {
-            echo "Pengajuan cuti gagal.";
+            $_SESSION['error_message'] = implode("<br>", $errors);
+            header("Location: ../view/pengajuanView.php");
+            exit();
         } else {
             // Jika semua validasi berhasil, upload file
             if (move_uploaded_file($_FILES["inputLampiran"]["tmp_name"], $targetFile)) {
-                // Jika upload berhasil, simpan data ke database
+                // Jika upload berhasil, simpan nama file ke dalam variabel
                 $lampiranFilename = basename($_FILES["inputLampiran"]["name"]);
-
-                // Query untuk menyimpan data pengajuan cuti ke database
-                $insertSql = "INSERT INTO pengajuancuti (IDKaryawan, NamaKaryawan, Jabatan, NIK, JenisCuti, TanggalAwal, TanggalAkhir, Alasan, Lampiran, Status) 
-                VALUES ('$userID', '$inputNama', '$inputJabatan', '$inputNIK', '$inputJenisCuti', '$inputTanggalAwal', '$inputTanggalAkhir', '$inputAlasanCuti', '$lampiranFilename', 'Pending')";
-                if ($conn->query($insertSql) === TRUE) {
-                    echo "Pengajuan cuti berhasil disimpan.";
-                } else {
-                    echo "Error: " . $insertSql . "<br>" . $conn->error;
-                }
             } else {
-                echo "Error uploading file.";
+                $_SESSION['error_message'] = "Error uploading file.";
+                header("Location: ../view/pengajuanView.php");
+                exit();
             }
         }
+    }
+
+    // Jika ada kesalahan, simpan dalam session dan kembali ke form
+    if (!empty($errors)) {
+        $_SESSION['error_message'] = implode("<br>", $errors);
+        header("Location: ../view/pengajuanView.php");
+        exit();
+    }
+
+    // Query untuk menyimpan data pengajuan cuti ke database
+    $insertSql = "INSERT INTO pengajuancuti (IDKaryawan, NamaKaryawan, Jabatan, NIK, JenisCuti, TanggalAwal, TanggalAkhir, Alasan, Lampiran, Status) 
+                  VALUES ('$userID', '$inputNama', '$inputJabatan', '$inputNIK', '$inputJenisCuti', '$inputTanggalAwal', '$inputTanggalAkhir', '$inputAlasanCuti', '$lampiranFilename', 'Pending')";
+    
+    if ($conn->query($insertSql) === TRUE) {
+        $_SESSION['success_message'] = "Pengajuan cuti berhasil disimpan.";
+        addNotification("Pengajuan cuti Anda telah disimpan.");
     } else {
-        echo "File lampiran tidak ditemukan.";
+        $_SESSION['error_message'] = "Error: " . $insertSql . "<br>" . $conn->error;
+        addNotification("Gagal menyimpan pengajuan cuti.");
     }
 
     $conn->close();
+    header("Location: ../view/statusView.php");
+    exit();
 } else {
     // Redirect to appropriate error page or handle accordingly
     exit("Invalid request method.");

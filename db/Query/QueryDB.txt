@@ -1,51 +1,33 @@
 -- Membuat tabel Karyawan
 CREATE TABLE Karyawan (
     IDKaryawan INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
-    Foto VARCHAR(255) NOT NULL, -- Foto Karyawan
-    NamaKaryawan VARCHAR(255) NOT NULL,  -- Nama karyawan
-    Jabatan VARCHAR(100) NOT NULL,  -- Jabatan karyawan
-    NIK VARCHAR(50) UNIQUE NOT NULL,  -- Nomor Induk Kependudukan, harus unik
-    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email karyawan, harus unik
-    TanggalLahir DATE NOT NULL,  -- Tanggal lahir karyawan
-    TanggalBergabung DATE NOT NULL,  -- Tanggal bergabung dengan perusahaan
-    Alamat TEXT NOT NULL,  -- Alamat karyawan
-    NoTelp VARCHAR(15) NOT NULL,  -- Nomor telepon karyawan
-    MasaKerja INT,  -- Kolom untuk menyimpan masa kerja
-    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
-    Password VARCHAR(255) NOT NULL  -- Password untuk login
-);
-
--- Membuat tabel Manager
-CREATE TABLE Manager (
-    IDManager INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
-    NamaManager VARCHAR(255) NOT NULL,  -- Nama manajer
-    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email manajer, harus unik
-    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
-    Password VARCHAR(255) NOT NULL  -- Password untuk login
-);
-
--- Membuat tabel HRD
-CREATE TABLE HRD (
-    IDHRD INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
-    NamaHRD VARCHAR(255) NOT NULL,  -- Nama HRD
-    Email VARCHAR(255) UNIQUE NOT NULL,  -- Email HRD, harus unik
-    Username VARCHAR(50) UNIQUE NOT NULL,  -- Username untuk login, harus unik
-    Password VARCHAR(255) NOT NULL  -- Password untuk login
+    Foto VARCHAR(255), -- Foto Karyawan
+    NamaKaryawan VARCHAR(255) NULL,  -- Nama karyawan
+    Jabatan VARCHAR(100) NULL,  -- Jabatan karyawan
+    NIK VARCHAR(50) UNIQUE NULL,  -- Nomor Induk Kependudukan, harus unik
+    Email VARCHAR(255) UNIQUE NULL,  -- Email karyawan, harus unik
+    TanggalLahir DATE NULL,  -- Tanggal lahir karyawan
+    TanggalBergabung DATE NULL,  -- Tanggal bergabung dengan perusahaan
+    Alamat TEXT NULL,  -- Alamat karyawan
+    NoTelp VARCHAR(15) NULL,  -- Nomor telepon karyawan
+    MasaKerja INT NULL,  -- Kolom untuk menyimpan masa kerja
+    Username VARCHAR(50) UNIQUE NULL,  -- Username untuk login, harus unik
+    Password VARCHAR(255) NULL  -- Password untuk login
 );
 
 -- Membuat tabel PengajuanCuti
 CREATE TABLE PengajuanCuti (
     IDPengajuan INT PRIMARY KEY AUTO_INCREMENT,  
     IDKaryawan INT,  
-    NamaKaryawan VARCHAR(255) NOT NULL,  
-    Jabatan VARCHAR(100) NOT NULL,  
-    NIK VARCHAR(50) NOT NULL,  
-    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota') NOT NULL,  
-    TanggalAwal DATE NOT NULL,  
-    TanggalAkhir DATE NOT NULL,  
-    Alasan TEXT NOT NULL,  
+    NamaKaryawan VARCHAR(255) NULL,  
+    Jabatan VARCHAR(100) NULL,  
+    NIK VARCHAR(50) NULL,  
+    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota') NULL,  
+    TanggalAwal DATE NULL,  
+    TanggalAkhir DATE NULL,  
+    Alasan TEXT NULL,  
     Lampiran VARCHAR(255),  
-    Status ENUM('Pending', 'Disetujui', 'Ditolak') NOT NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
+    Status ENUM('Pending', 'Disetujui', 'Ditolak') NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
     FOREIGN KEY (IDKaryawan) REFERENCES Karyawan(IDKaryawan)  
 );
 

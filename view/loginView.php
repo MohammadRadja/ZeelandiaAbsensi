@@ -26,15 +26,17 @@ unset($_SESSION['login_errors']);
                     <div class="brand text-center mt-5">
                         <img src="../assets/img/logo.png" alt="logo">
                     </div>
-                    <?php if (isset($errors['general'])) : ?>
-                                <div class="invalid-feedback">
-                                    <?php echo $errors['general']; ?>
-                                </div>
-                            <?php endif; ?>
+                    <?php if (!empty($errors)): ?>
+                        <div class="alert alert-danger">
+                            <?php foreach ($errors as $error): ?>
+                                <p><?php echo $error; ?></p>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                     <form method="POST" action="../controllers/authController.php" class="my-login-validation" novalidate>
                         <div class="form-group m-4">
                             <input id="IDKaryawan" type="text" class="form-control <?php echo isset($errors['IDKaryawan']) ? 'is-invalid' : ''; ?>" name="IDKaryawan" value="" placeholder="ID Karyawan" required autofocus>
-                            <?php if (isset($errors['IDKaryawan'])) : ?>
+                            <?php if (isset($errors['IDKaryawan'])): ?>
                                 <div class="invalid-feedback">
                                     <?php echo $errors['IDKaryawan']; ?>
                                 </div>
@@ -42,7 +44,7 @@ unset($_SESSION['login_errors']);
                         </div>
                         <div class="form-group m-4">
                             <input id="Password" type="password" class="form-control <?php echo isset($errors['Password']) ? 'is-invalid' : ''; ?>" name="Password" placeholder="Password" required data-eye>
-                            <?php if (isset($errors['Password'])) : ?>
+                            <?php if (isset($errors['Password'])): ?>
                                 <div class="invalid-feedback">
                                     <?php echo $errors['Password']; ?>
                                 </div>

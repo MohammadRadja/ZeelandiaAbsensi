@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 20 Jun 2024 pada 04.25
+-- Waktu pembuatan: 02 Jul 2024 pada 12.39
 -- Versi server: 8.0.30
 -- Versi PHP: 8.0.30
 
@@ -24,54 +24,32 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `hrd`
---
-
-CREATE TABLE `hrd` (
-  `IDHRD` int NOT NULL,
-  `NamaHRD` varchar(255) NOT NULL,
-  `Email` varchar(255) NOT NULL,
-  `Username` varchar(50) NOT NULL,
-  `Password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data untuk tabel `hrd`
---
-
-INSERT INTO `hrd` (`IDHRD`, `NamaHRD`, `Email`, `Username`, `Password`) VALUES
-(1, 'Jessica Tan', 'jessica.tan@example.com', 'jessicatan', 'hrdpwd1'),
-(2, 'Kevin Chan', 'kevin.chan@example.com', 'kevinchan', 'hrdpwd2');
-
--- --------------------------------------------------------
-
---
 -- Struktur dari tabel `karyawan`
 --
 
 CREATE TABLE `karyawan` (
   `IDKaryawan` int NOT NULL,
-  `NamaKaryawan` varchar(255) NOT NULL,
-  `Jabatan` varchar(100) NOT NULL,
-  `NIK` varchar(50) NOT NULL,
-  `Email` varchar(255) NOT NULL,
-  `TanggalLahir` date NOT NULL,
-  `TanggalBergabung` date NOT NULL,
-  `Alamat` text NOT NULL,
-  `NoTelp` varchar(15) NOT NULL,
+  `NamaKaryawan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Jabatan` enum('karyawan','hrd','manager') NOT NULL,
+  `NIK` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `TanggalLahir` date DEFAULT NULL,
+  `TanggalBergabung` date DEFAULT NULL,
+  `Alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `NoTelp` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `MasaKerja` int DEFAULT NULL,
-  `Username` varchar(50) NOT NULL,
-  `Password` varchar(255) NOT NULL
+  `Username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Foto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data untuk tabel `karyawan`
 --
 
-INSERT INTO `karyawan` (`IDKaryawan`, `NamaKaryawan`, `Jabatan`, `NIK`, `Email`, `TanggalLahir`, `TanggalBergabung`, `Alamat`, `NoTelp`, `MasaKerja`, `Username`, `Password`) VALUES
-(1, 'John Doe', 'Staff', '1234567890', 'john.doe@example.com', '1990-05-15', '2010-07-01', 'Jl. Raya No. 123, Jakarta', '081234567890', 13, 'johndoe', 'password123'),
-(2, 'Jane Smith', 'Manager', '0987654321', 'jane.smith@example.com', '1985-09-20', '2005-03-10', 'Jl. Indah No. 456, Surabaya', '087654321098', 19, 'janesmith', 'password456'),
-(3, 'Michael Johnson', 'Analyst', '5678901234', 'michael.johnson@example.com', '1995-12-03', '2018-02-15', 'Jl. Mawar No. 789, Bandung', '089012345678', 6, 'michaelj', 'securepwd');
+INSERT INTO `karyawan` (`IDKaryawan`, `NamaKaryawan`, `Jabatan`, `NIK`, `Email`, `TanggalLahir`, `TanggalBergabung`, `Alamat`, `NoTelp`, `MasaKerja`, `Username`, `Password`, `Foto`) VALUES
+(1111, 'test', 'hrd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'test', '098f6bcd4621d373cade4e832627b4f6', NULL),
+(11211, 'radja', 'karyawan', '11211', 'radja.amri28@gmail.com', NULL, '2024-06-30', 'Pesona Parahiyangan', '11211', 0, 'radja', '42afcd328885ec205cb656b53194e816', NULL);
 
 --
 -- Trigger `karyawan`
@@ -97,32 +75,12 @@ DELIMITER ;
 --
 CREATE TABLE `laporancuti` (
 `No` bigint unsigned
+,`IDKaryawan` int
+,`NamaKaryawan` varchar(255)
 ,`TanggalAwal` date
 ,`JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti 1 hari area luar kota')
 ,`Jumlah hari` bigint
 );
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `manager`
---
-
-CREATE TABLE `manager` (
-  `IDManager` int NOT NULL,
-  `NamaManager` varchar(255) NOT NULL,
-  `Email` varchar(255) NOT NULL,
-  `Username` varchar(50) NOT NULL,
-  `Password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data untuk tabel `manager`
---
-
-INSERT INTO `manager` (`IDManager`, `NamaManager`, `Email`, `Username`, `Password`) VALUES
-(1, 'Sarah Lee', 'sarah.lee@example.com', 'sarahlee', 'managerpwd1'),
-(2, 'David Wong', 'david.wong@example.com', 'davidwong', 'managerpwd2');
 
 -- --------------------------------------------------------
 
@@ -149,9 +107,7 @@ CREATE TABLE `pengajuancuti` (
 --
 
 INSERT INTO `pengajuancuti` (`IDPengajuan`, `IDKaryawan`, `NamaKaryawan`, `Jabatan`, `NIK`, `JenisCuti`, `TanggalAwal`, `TanggalAkhir`, `Alasan`, `Lampiran`, `Status`) VALUES
-(1, 1, 'John Doe', 'Staff', '1234567890', 'cuti sakit', '2024-06-01', '2024-06-03', 'Sakit perut', 'cuti_sakit_johndoe.pdf', 'Disetujui'),
-(2, 2, 'Jane Smith', 'Manager', '0987654321', 'cuti melahirkan', '2024-07-10', '2024-08-10', 'Melahirkan anak kedua', 'cuti_melahirkan_janesmith.pdf', 'Pending'),
-(3, 3, 'Michael Johnson', 'Analyst', '5678901234', 'cuti 1 hari area luar kota', '2024-07-15', '2024-07-15', 'Meeting di luar kota', NULL, 'Ditolak');
+(4, 11211, 'Radja', 'Karyawan', '11211', 'cuti sakit', '2024-06-29', '2024-06-30', 'Sakit', NULL, 'Disetujui');
 
 -- --------------------------------------------------------
 
@@ -172,7 +128,7 @@ CREATE TABLE `statuscuti` (
 --
 DROP TABLE IF EXISTS `laporancuti`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `laporancuti`  AS SELECT row_number() OVER (ORDER BY `pengajuancuti`.`TanggalAwal` ) AS `No`, `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, ((to_days(`pengajuancuti`.`TanggalAkhir`) - to_days(`pengajuancuti`.`TanggalAwal`)) + 1) AS `Jumlah hari` FROM `pengajuancuti` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `laporancuti`  AS SELECT row_number() OVER (ORDER BY `pengajuancuti`.`TanggalAwal` ) AS `No`, `pengajuancuti`.`IDKaryawan` AS `IDKaryawan`, `pengajuancuti`.`NamaKaryawan` AS `NamaKaryawan`, `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, ((to_days(`pengajuancuti`.`TanggalAkhir`) - to_days(`pengajuancuti`.`TanggalAwal`)) + 1) AS `Jumlah hari` FROM `pengajuancuti` ;
 
 -- --------------------------------------------------------
 
@@ -188,27 +144,11 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 
 --
--- Indeks untuk tabel `hrd`
---
-ALTER TABLE `hrd`
-  ADD PRIMARY KEY (`IDHRD`),
-  ADD UNIQUE KEY `Email` (`Email`),
-  ADD UNIQUE KEY `Username` (`Username`);
-
---
 -- Indeks untuk tabel `karyawan`
 --
 ALTER TABLE `karyawan`
   ADD PRIMARY KEY (`IDKaryawan`),
   ADD UNIQUE KEY `NIK` (`NIK`),
-  ADD UNIQUE KEY `Email` (`Email`),
-  ADD UNIQUE KEY `Username` (`Username`);
-
---
--- Indeks untuk tabel `manager`
---
-ALTER TABLE `manager`
-  ADD PRIMARY KEY (`IDManager`),
   ADD UNIQUE KEY `Email` (`Email`),
   ADD UNIQUE KEY `Username` (`Username`);
 
@@ -224,28 +164,10 @@ ALTER TABLE `pengajuancuti`
 --
 
 --
--- AUTO_INCREMENT untuk tabel `hrd`
---
-ALTER TABLE `hrd`
-  MODIFY `IDHRD` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT untuk tabel `karyawan`
---
-ALTER TABLE `karyawan`
-  MODIFY `IDKaryawan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT untuk tabel `manager`
---
-ALTER TABLE `manager`
-  MODIFY `IDManager` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT untuk tabel `pengajuancuti`
 --
 ALTER TABLE `pengajuancuti`
-  MODIFY `IDPengajuan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `IDPengajuan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

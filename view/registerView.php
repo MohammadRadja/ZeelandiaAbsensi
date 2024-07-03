@@ -1,6 +1,7 @@
 <?php
-session_start();
-
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 // Ambil pesan error dari session jika ada
 $errors = isset($_SESSION['register_errors']) ? $_SESSION['register_errors'] : array();
 

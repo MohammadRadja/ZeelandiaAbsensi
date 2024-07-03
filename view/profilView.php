@@ -70,7 +70,7 @@ exit();
                 <label for="inputMasaKerja" class="col-sm-2 col-form-label">Masa Kerja :</label>
                 <div class="col-sm-2">
                     <div class="input-group">
-                        <input type="number" class="form-control" id="inputMasaKerja" name="inputMasaKerja" placeholder="Masa Kerja" value="<?php echo htmlspecialchars($currentMasaKerja); ?>">
+                        <input type="text" class="form-control" id="inputMasaKerja" name="inputMasaKerja" placeholder="Masa Kerja" value="<?php echo htmlspecialchars($currentMasaKerja); ?>">
                         <span class="input-group-text">Tahun</span>
                     </div>
                 </div>
@@ -81,12 +81,12 @@ exit();
                     <input type="password" class="form-control" id="inputPassword" name="inputPassword" placeholder="Ubah sandi">
                 </div>
             </div>
-            <div class="mb-3 row">
+            <!-- <div class="mb-3 row">
                 <label for="inputFotoProfil" class="col-sm-2 col-form-label">Foto Profil :</label>
                 <div class="col-sm-10">
                     <input type="file" class="form-control" id="inputFotoProfil" name="inputFotoProfil" accept="image/*">
                 </div>
-            </div>
+            </div> -->
             <div class="d-flex justify-content-center">
                 <button type="submit" class="btn btn-warning">Edit Profil</button>
             </div>

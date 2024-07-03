@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../db/koneksi.php'; // Sesuaikan path ini dengan struktur proyek Anda
 
 $errors = array(); // Array untuk menyimpan pesan kesalahan
@@ -36,8 +38,11 @@ function processLogin() {
         $hashedPassword = md5($Password);
 
         // Query to fetch the user
-        $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$IDKaryawan'";
-        $result = $conn->query($sql);
+        $sql = "SELECT * FROM karyawan WHERE IDKaryawan = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $IDKaryawan);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
@@ -120,7 +125,7 @@ function processRegistration() {
     $Password = sanitizeInput($_POST['Password']);
 
     // Hash the password using password_hash
-    $hashedPassword = password_hash($Password, PASSWORD_DEFAULT);
+    $hashedPassword = md5($Password);
 
     // Insert the new user into the database
     $sql = "INSERT INTO karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
@@ -145,7 +150,6 @@ function processLogout() {
     header("Location: ../view/loginView.php");
     exit();
 }
-
 //POST Process
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST['login'])) {
@@ -154,7 +158,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         processRegistration();
     }
 }
-
 //Logout Process
 if (isset($_GET['action']) && $_GET['action'] == 'logout') {
     processLogout();

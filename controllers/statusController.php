@@ -1,13 +1,20 @@
 <?php
-// Pastikan session_start hanya dipanggil jika belum ada sesi yang aktif
-require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
+require_once '../db/koneksi.php';
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Fungsi untuk menambah notifikasi ke sesi
 function addNotification($message) {
     if (!isset($_SESSION['notifications'])) {
         $_SESSION['notifications'] = [];
     }
-    $_SESSION['notifications'][] = ['message' => $message];
+    $currentDateTime = date('Y-m-d H:i:s');
+    $_SESSION['notifications'][] = [
+        'message' => $message,
+        'timestamp' => $currentDateTime
+    ];
 }
 
 // Ambil IDKaryawan dan jabatan dari session
@@ -28,10 +35,8 @@ if (isset($_SESSION['IDKaryawan'], $_SESSION['jabatan'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approveStatus'])) {
     $IDPengajuan = $_POST['IDPengajuan'];
     updateStatus($IDPengajuan, 'Disetujui');
-    $_SESSION['message'] = "Cuti berhasil disetujui.";
-    addNotification("Pengajuan cuti Anda telah disetujui.");
-    header("Location: ../view/StatusView.php");
-    exit();
+    $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
+    echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
 // Proses POST untuk menolak status cuti
@@ -39,9 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rejectStatus'])) {
     $IDPengajuan = $_POST['IDPengajuan'];
     updateStatus($IDPengajuan, 'Ditolak');
     $_SESSION['message'] = "Cuti berhasil ditolak.";
-    addNotification("Pengajuan cuti Anda telah ditolak.");
-    header("Location: ../view/StatusView.php");
-    exit();
+    echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
 function getPengajuanCutiByRole($userID, $jabatan) {

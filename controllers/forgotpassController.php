@@ -1,6 +1,9 @@
 <?php
-session_start();
 require_once '../db/koneksi.php'; // Sesuaikan dengan path yang benar
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $IDKaryawan = $_POST['ForgotPass'];

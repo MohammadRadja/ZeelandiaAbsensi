@@ -1,8 +1,22 @@
 <?php
-require_once '../db/koneksi.php'; // Pastikan path ini benar
+require_once '../db/koneksi.php';
+
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Fungsi untuk menambah notifikasi ke sesi
+function addNotification($message) {
+    if (!isset($_SESSION['notifications'])) {
+        $_SESSION['notifications'] = [];
+    }
+    $currentDateTime = date('Y-m-d H:i:s');
+    $_SESSION['notifications'][] = [
+        'message' => $message,
+        'timestamp' => $currentDateTime
+    ];
+}
+
 
 $userID = $_SESSION['IDKaryawan'];
 
@@ -43,7 +57,7 @@ if (isset($_SESSION['IDKaryawan'])) {
     }
 
     // Assign data karyawan ke variabel untuk ditampilkan di form
-    $currentFoto = isset($employeeData['Foto']) ? htmlspecialchars($employeeData['Foto']) : $currentFoto;
+    // $currentFoto = isset($employeeData['Foto']) ? htmlspecialchars($employeeData['Foto']) : $currentFoto;
     $currentNama = isset($employeeData['NamaKaryawan']) ? htmlspecialchars($employeeData['NamaKaryawan']) : '';
     $currentJabatan = isset($employeeData['Jabatan']) ? htmlspecialchars($employeeData['Jabatan']) : '';
     $currentNIK = isset($employeeData['NIK']) ? htmlspecialchars($employeeData['NIK']) : '';
@@ -62,7 +76,7 @@ if (isset($_SESSION['IDKaryawan'])) {
 // Handle POST request untuk update profil
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
-    $FotoProfil = $_FILES['inputFotoProfil'];
+    // $FotoProfil = $_FILES['inputFotoProfil'];
     $NamaKaryawan = $_POST['inputNama'];
     $Jabatan = $_POST['inputJabatan'];
     $NIK = $_POST['inputNIK'];
@@ -118,40 +132,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Validasi file upload
-    if ($FotoProfil['error'] == UPLOAD_ERR_OK) {
-        $targetDir = "../assets/img/profiles/";
-        $targetFile = $targetDir . basename($FotoProfil["name"]);
-        $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+    // if ($FotoProfil['error'] == UPLOAD_ERR_OK) {
+    //     $targetDir = "../assets/img/profiles/";
+    //     $targetFile = $targetDir . basename($FotoProfil["name"]);
+    //     $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
 
-        // Pastikan path file tidak kosong sebelum memanggil getimagesize
-        if (!empty($FotoProfil["tmp_name"])) {
-            $check = getimagesize($FotoProfil["tmp_name"]);
-            if ($check === false) {
-                $errors[] = "File bukan gambar.";
-            }
-        } else {
-            $errors[] = "File tidak ditemukan.";
-        }
+    //     // Pastikan path file tidak kosong sebelum memanggil getimagesize
+    //     if (!empty($FotoProfil["tmp_name"])) {
+    //         $check = getimagesize($FotoProfil["tmp_name"]);
+    //         if ($check === false) {
+    //             $errors[] = "File bukan gambar.";
+    //         }
+    //     } else {
+    //         $errors[] = "File tidak ditemukan.";
+    //     }
 
-        // Periksa ukuran file
-        if ($FotoProfil["size"] > 500000) {
-            $errors[] = "Ukuran file terlalu besar. Maksimal 500KB.";
-        }
+    //     // Periksa ukuran file
+    //     if ($FotoProfil["size"] > 500000) {
+    //         $errors[] = "Ukuran file terlalu besar. Maksimal 500KB.";
+    //     }
 
-        // Periksa format file
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
-            $errors[] = "Hanya format JPG, JPEG, PNG & GIF yang diperbolehkan.";
-        }
+    //     // Periksa format file
+    //     if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg" && $imageFileType != "gif") {
+    //         $errors[] = "Hanya format JPG, JPEG, PNG & GIF yang diperbolehkan.";
+    //     }
 
-        // Jika tidak ada error, pindahkan file ke folder target
-        if (empty($errors)) {
-            if (!move_uploaded_file($FotoProfil["tmp_name"], $targetFile)) {
-                $errors[] = "Terjadi kesalahan saat mengunggah file.";
-            } else {
-                $currentFoto = $targetFile;
-            }
-        }
-    }
+    //     // Jika tidak ada error, pindahkan file ke folder target
+    //     if (empty($errors)) {
+    //         if (!move_uploaded_file($FotoProfil["tmp_name"], $targetFile)) {
+    //             $errors[] = "Terjadi kesalahan saat mengunggah file.";
+    //         } else {
+    //             $currentFoto = $targetFile;
+    //         }
+    //     }
+    // }
 
     // Anda bisa tambahkan validasi lain sesuai kebutuhan seperti panjang password, dll.
     if (!empty($errors)) {
@@ -175,8 +189,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($conn->query($updateSql) === TRUE) {
         $_SESSION['success_message'] = "Profil berhasil diperbarui.";
+        addNotification("Profil berhasil diperbarui.");
     } else {
         $_SESSION['error_message'] = "Error: " . $updateSql . "<br>" . $conn->error;
+        addNotification("Gagal memperbarui profil.");
     }
 
     // Jika ada perubahan password
@@ -186,8 +202,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($conn->query($updatePasswordSql) === TRUE) {
             $_SESSION['success_message'] .= " Password berhasil diubah.";
+            addNotification("Password berhasil diubah.");
         } else {
             $_SESSION['error_message'] .= " Error updating password: " . $conn->error;
+            addNotification("Password gagal diubah.");
         }
     }
 
