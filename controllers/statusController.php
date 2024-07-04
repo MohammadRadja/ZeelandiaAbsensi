@@ -53,8 +53,8 @@ function getPengajuanCutiByRole($userID, $jabatan) {
     if (in_array($jabatan, ['hrd', 'admin', 'manager'])) {
         // Query for HRD or Manager to get all pengajuancuti data
         $query = "SELECT pc.*, k.NamaKaryawan 
-                FROM pengajuancuti pc
-                JOIN karyawan k ON pc.IDKaryawan = k.IDKaryawan
+                FROM PengajuanCuti pc
+                JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan
                 WHERE pc.Status = 'Pending';";
         $stmt = $conn->prepare($query);
         $stmt->execute();
@@ -68,7 +68,7 @@ function getPengajuanCutiByRole($userID, $jabatan) {
     } else {
         // Query for other roles to get pengajuancuti data for the logged-in user
         $query = "SELECT TanggalAwal, JenisCuti, Status 
-                  FROM pengajuancuti 
+                  FROM PengajuanCuti 
                   WHERE IDKaryawan = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $userID);
@@ -85,7 +85,7 @@ function getPengajuanCutiByRole($userID, $jabatan) {
 
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
-    $query = "UPDATE pengajuancuti SET Status = ? WHERE IDPengajuan = ?";
+    $query = "UPDATE PengajuanCuti SET Status = ? WHERE IDPengajuan = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("si", $newStatus, $IDPengajuan);
     $stmt->execute();

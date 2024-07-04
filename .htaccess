@@ -1,0 +1,61 @@
+# Mengaktifkan mod_rewrite untuk URL rewriting
+RewriteEngine On
+
+# Redirect non-www ke www (Opsional)
+# RewriteCond %{HTTP_HOST} !^www\. [NC]
+# RewriteRule ^(.*)$ http://www.%{HTTP_HOST}/$1 [L,R=301]
+
+# Redirect HTTP ke HTTPS (Opsional)
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Mengarahkan semua permintaan ke index.php (untuk aplikasi berbasis PHP seperti Laravel)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+
+# Menampilkan kesalahan secara detail untuk debugging (Non-produksi)
+php_flag display_errors on
+php_value error_reporting 32767
+
+# Menetapkan zona waktu default
+php_value date.timezone "Asia/Jakarta"
+
+# Membatasi ukuran upload file
+php_value upload_max_filesize 10M
+php_value post_max_size 10M
+
+# Menambah waktu eksekusi script PHP
+php_value max_execution_time 300
+php_value max_input_time 300
+
+# Kompresi Gzip untuk meningkatkan kinerja
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Mengaktifkan cache browser untuk meningkatkan kinerja
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/gif "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType text/css "access plus 1 week"
+  ExpiresByType text/html "access plus 1 day"
+  ExpiresByType application/pdf "access plus 1 month"
+  ExpiresByType text/x-javascript "access plus 1 week"
+  ExpiresByType application/x-shockwave-flash "access plus 1 month"
+  ExpiresByType image/x-icon "access plus 1 year"
+  ExpiresDefault "access plus 2 days"
+</IfModule>
+
+# Mencegah list direktori
+Options -Indexes
+
+# Mengelola file caching (untuk gambar, CSS, dan JavaScript)
+<IfModule mod_headers.c>
+  <FilesMatch "\.(jpg|jpeg|png|gif|swf|css|js)$">
+    Header set Cache-Control "max-age=2592000, public"
+  </FilesMatch>
+</IfModule>

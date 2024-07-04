@@ -124,7 +124,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Query untuk menyimpan data pengajuan cuti ke database
-    $insertSql = "INSERT INTO pengajuancuti (IDKaryawan, NamaKaryawan, Jabatan, NIK, JenisCuti, TanggalAwal, TanggalAkhir, Alasan, Lampiran, Status) 
+    $insertSql = "INSERT INTO PengajuanCuti (IDKaryawan, NamaKaryawan, Jabatan, NIK, JenisCuti, TanggalAwal, TanggalAkhir, Alasan, Lampiran, Status) 
                   VALUES ('$userID', '$inputNama', '$inputJabatan', '$inputNIK', '$inputJenisCuti', '$inputTanggalAwal', '$inputTanggalAkhir', '$inputAlasanCuti', '$lampiranFilename', 'Pending')";
     
     if ($conn->query($insertSql) === TRUE) {
@@ -136,7 +136,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $conn->close();
-    echo '<script>window.location.href="../view/StatusView.php";</script>';
+    echo '<script>window.location.href="../view/statusView.php";</script>';
 } else {
     // Redirect to appropriate error page or handle accordingly
     header("Location: ../view/pengajuanView.php");

@@ -29,19 +29,19 @@ if (!isset($_SESSION['IDKaryawan'])) {
             <div class="mb-3 row">
                 <label for="inputNama" class="col-sm-2 col-form-label">Nama :</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputNama" name="inputNama" value="<?php echo htmlspecialchars($currentNama); ?>" placeholder="Nama" disabled>
+                    <input type="text" class="form-control" id="inputNama" name="inputNama" value="<?php echo htmlspecialchars($currentNama); ?>" placeholder="Nama">
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="inputJabatan" class="col-sm-2 col-form-label">Jabatan :</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="inputJabatan" name="inputJabatan" value="<?php echo htmlspecialchars($currentJabatan); ?>" placeholder="Jabatan" disabled>
+                    <input type="text" class="form-control" id="inputJabatan" name="inputJabatan" value="<?php echo htmlspecialchars($currentJabatan); ?>" placeholder="Jabatan">
                 </div>
             </div>
             <div class="mb-3 row">
                 <label for="inputNIK" class="col-sm-2 col-form-label">NIK :</label>
                 <div class="col-sm-10">
-                    <input type="number" class="form-control" id="inputNIK" name="inputNIK" value="<?php echo htmlspecialchars($currentNIK); ?>" placeholder="NIK" disabled>
+                    <input type="number" class="form-control" id="inputNIK" name="inputNIK" value="<?php echo htmlspecialchars($currentNIK); ?>" placeholder="NIK">
                 </div>
             </div>
             <div class="mb-3 row">

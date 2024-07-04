@@ -38,7 +38,7 @@ function processLogin() {
         $hashedPassword = md5($Password);
 
         // Query to fetch the user
-        $sql = "SELECT * FROM karyawan WHERE IDKaryawan = ?";
+        $sql = "SELECT * FROM Karyawan WHERE IDKaryawan = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $IDKaryawan);
         $stmt->execute();
@@ -95,7 +95,7 @@ function validateRegistrationInput() {
     }
 
     // Cek apakah username sudah digunakan
-    $checkUsernameQuery = "SELECT * FROM karyawan WHERE Username = '$Username'";
+    $checkUsernameQuery = "SELECT * FROM Karyawan WHERE Username = '$Username'";
     $checkResult = $conn->query($checkUsernameQuery);
 
     if ($checkResult && $checkResult->num_rows > 0) {
@@ -128,7 +128,7 @@ function processRegistration() {
     $hashedPassword = md5($Password);
 
     // Insert the new user into the database
-    $sql = "INSERT INTO karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
+    $sql = "INSERT INTO Karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
 
     if ($conn->query($sql) === TRUE) {
         header("Location: ../view/loginView.php");

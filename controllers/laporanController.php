@@ -43,10 +43,10 @@ if (isset($_SESSION['IDKaryawan']) && isset($_SESSION['jabatan'])) {
     // Query untuk rekapitulasi laporan cuti per bulan
     if ($userRole === 'hrd' && 'manager') {
         // HRD melihat semua rekapitulasi laporan cuti
-        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti GROUP BY MONTH(TanggalAwal)";
+        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM PengajuanCuti GROUP BY MONTH(TanggalAwal)";
     } else {
         // Selain HRD melihat rekapitulasi laporan cuti mereka sendiri
-        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM pengajuancuti WHERE IDKaryawan = '$userID' GROUP BY MONTH(TanggalAwal)";
+        $rekapQuery = "SELECT MONTH(TanggalAwal) AS Bulan, COUNT(*) AS Jumlah FROM PengajuanCuti WHERE IDKaryawan = '$userID' GROUP BY MONTH(TanggalAwal)";
     }
 
     // Logging query

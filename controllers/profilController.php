@@ -32,7 +32,7 @@ $currentMasaKerja = '';
 
 // Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
 function getEmployeeData($conn, $userID) {
-    $sql = "SELECT * FROM karyawan WHERE IDKaryawan = '$userID'";
+    $sql = "SELECT * FROM Karyawan WHERE IDKaryawan = '$userID'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -171,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Query untuk update profil
-    $updateSql = "UPDATE karyawan SET 
+    $updateSql = "UPDATE Karyawan SET 
             Foto = '$currentFoto',
             NamaKaryawan = '$NamaKaryawan',
             Jabatan = '$Jabatan',
@@ -194,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Jika ada perubahan password
     if (!empty($PasswordBaru)) {
         $hashedPassword = password_hash($PasswordBaru, PASSWORD_DEFAULT);
-        $updatePasswordSql = "UPDATE karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$userID'";
+        $updatePasswordSql = "UPDATE Karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$userID'";
 
         if ($conn->query($updatePasswordSql) === TRUE) {
             $_SESSION['success_message'] .= " Password berhasil diubah.";

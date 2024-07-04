@@ -18,7 +18,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashedPassword = md5($newPassword);
 
         // Update password di database
-        $updatePasswordQuery = "UPDATE karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$IDKaryawan'";
+        $updatePasswordQuery = "UPDATE Karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$IDKaryawan'";
         if ($conn->query($updatePasswordQuery) === TRUE) {
             $_SESSION['success_message'] = "Password berhasil direset. Silakan login dengan password baru Anda.";
             header("Location: ../view/forgotpassView.php");
