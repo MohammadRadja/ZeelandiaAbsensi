@@ -95,8 +95,11 @@ function validateRegistrationInput() {
     }
 
     // Cek apakah username sudah digunakan
-    $checkUsernameQuery = "SELECT * FROM Karyawan WHERE Username = '$Username'";
-    $checkResult = $conn->query($checkUsernameQuery);
+    $checkUsernameQuery = "SELECT * FROM Karyawan WHERE Username = ?";
+    $stmt = $conn->prepare($checkUsernameQuery);
+    $stmt->bind_param("s", $Username);
+    $stmt->execute();
+    $checkResult = $stmt->get_result();
 
     if ($checkResult && $checkResult->num_rows > 0) {
         $errors['Username'] = "Username sudah digunakan. Silakan pilih username lain.";
@@ -128,9 +131,11 @@ function processRegistration() {
     $hashedPassword = md5($Password);
 
     // Insert the new user into the database
-    $sql = "INSERT INTO Karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES ('$IDKaryawan', '$Fullname', 'karyawan', '$Username', '$hashedPassword')";
+    $sql = "INSERT INTO Karyawan (IDKaryawan, NamaKaryawan, Jabatan, Username, Password) VALUES (?, ?, 'karyawan', ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("isss", $IDKaryawan, $Fullname, $Username, $hashedPassword);
 
-    if ($conn->query($sql) === TRUE) {
+    if ($stmt->execute()) {
         header("Location: ../view/loginView.php");
         exit();
     } else {
@@ -164,3 +169,4 @@ if (isset($_GET['action']) && $_GET['action'] == 'logout') {
 }
 
 $conn->close();
+?>

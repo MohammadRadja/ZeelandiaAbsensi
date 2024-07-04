@@ -5,6 +5,8 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+$userID = $_SESSION['IDKaryawan'];
+
 // Fungsi untuk menambah notifikasi ke sesi
 function addNotification($message) {
     if (!isset($_SESSION['notifications'])) {
@@ -17,31 +19,20 @@ function addNotification($message) {
     ];
 }
 
-
-$userID = $_SESSION['IDKaryawan'];
-
-$currentFoto = '../assets/img/profiles/profile.png'; // Default profile picture
-$currentNama = '';
-$currentJabatan = '';
-$currentNIK = '';
-$currentAlamat = '';
-$currentEmail = '';
-$currentNoTelp = '';
-$currentTanggalBergabung = '';
-$currentMasaKerja = '';
+// Fungsi untuk menambahkan proteksi XSS dan SQL Injection
+function sanitizeInput($conn, $input) {
+    return htmlspecialchars(stripslashes(trim($conn->real_escape_string($input))));
+}
 
 // Fungsi untuk mengambil data karyawan dari database berdasarkan IDKaryawan
 function getEmployeeData($conn, $userID) {
-    $sql = "SELECT * FROM Karyawan WHERE IDKaryawan = '$userID'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        return $result->fetch_assoc();
-    } else {
-        return null;
-    }
+    $sql = "SELECT * FROM Karyawan WHERE IDKaryawan = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userID);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->num_rows > 0 ? $result->fetch_assoc() : null;
 }
-
 
 // Ambil IDKaryawan dari session
 if (isset($_SESSION['IDKaryawan'])) {
@@ -53,10 +44,11 @@ if (isset($_SESSION['IDKaryawan'])) {
     if (!$employeeData) {
         $_SESSION['error_message'] = "Data karyawan tidak ditemukan.";
         echo '<script>window.location.href="../view/loginView.php";</script>';
+        exit();
     }
 
     // Assign data karyawan ke variabel untuk ditampilkan di form
-    // $currentFoto = isset($employeeData['Foto']) ? htmlspecialchars($employeeData['Foto']) : $currentFoto;
+    $currentFoto = '../assets/img/profiles/profile.png'; // Default profile picture
     $currentNama = isset($employeeData['NamaKaryawan']) ? htmlspecialchars($employeeData['NamaKaryawan']) : '';
     $currentJabatan = isset($employeeData['Jabatan']) ? htmlspecialchars($employeeData['Jabatan']) : '';
     $currentNIK = isset($employeeData['NIK']) ? htmlspecialchars($employeeData['NIK']) : '';
@@ -64,37 +56,25 @@ if (isset($_SESSION['IDKaryawan'])) {
     $currentEmail = isset($employeeData['Email']) ? htmlspecialchars($employeeData['Email']) : '';
     $currentNoTelp = isset($employeeData['NoTelp']) ? htmlspecialchars($employeeData['NoTelp']) : '';
     $currentTanggalBergabung = isset($employeeData['TanggalBergabung']) ? htmlspecialchars($employeeData['TanggalBergabung']) : '';
-    $currentMasaKerja = isset($employeeData['MasaKerja']) ? htmlspecialchars($employeeData['MasaKerja']) : '';    
+    $currentMasaKerja = isset($employeeData['MasaKerja']) ? htmlspecialchars($employeeData['MasaKerja']) : '';
 } else {
     // Handle case when session IDKaryawan is not set
     $_SESSION['error_message'] = "User session not found. Please login.";
     echo '<script>window.location.href="../view/loginView.php";</script>';
+    exit();
 }
 
 // Handle POST request untuk update profil
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Ambil data dari form
-    // $FotoProfil = $_FILES['inputFotoProfil'];
-    $NamaKaryawan = $_POST['inputNama'];
-    $Jabatan = $_POST['inputJabatan'];
-    $NIK = $_POST['inputNIK'];
-    $Alamat = $_POST['inputAlamat'];
-    $Email = $_POST['inputEmail'];
-    $NoTelp = $_POST['inputNoTelp'];
-    $TanggalBergabung = $_POST['inputTanggalBergabung'];
-    $MasaKerja = $_POST['inputMasaKerja'];
-    $PasswordBaru = $_POST['inputPassword'];
-
-    // Proteksi dari SQL Injection
-    $NamaKaryawan = $conn->real_escape_string($NamaKaryawan);
-    $Jabatan = $conn->real_escape_string($Jabatan);
-    $NIK = $conn->real_escape_string($NIK);
-    $Alamat = $conn->real_escape_string($Alamat);
-    $Email = $conn->real_escape_string($Email);
-    $NoTelp = $conn->real_escape_string($NoTelp);
-    $TanggalBergabung = $conn->real_escape_string($TanggalBergabung);
-    $MasaKerja = $conn->real_escape_string($MasaKerja);
-    $PasswordBaru = $conn->real_escape_string($PasswordBaru);
+    $NamaKaryawan = sanitizeInput($conn, $_POST['inputNama']);
+    $NIK = sanitizeInput($conn, $_POST['inputNIK']);
+    $Alamat = sanitizeInput($conn, $_POST['inputAlamat']);
+    $Email = sanitizeInput($conn, $_POST['inputEmail']);
+    $NoTelp = sanitizeInput($conn, $_POST['inputNoTelp']);
+    $TanggalBergabung = sanitizeInput($conn, $_POST['inputTanggalBergabung']);
+    $MasaKerja = sanitizeInput($conn, $_POST['inputMasaKerja']);
+    $PasswordBaru = sanitizeInput($conn, $_POST['inputPassword']);
 
     // Ambil IDKaryawan dari session
     if (isset($_SESSION['IDKaryawan'])) {
@@ -170,37 +150,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit();
     }
 
-    // Query untuk update profil
+    // Query untuk update profil menggunakan prepared statements
     $updateSql = "UPDATE Karyawan SET 
-            Foto = '$currentFoto',
-            NamaKaryawan = '$NamaKaryawan',
-            Jabatan = '$Jabatan',
-            NIK = '$NIK',
-            Alamat = '$Alamat',
-            Email = '$Email',
-            NoTelp = '$NoTelp',
-            TanggalBergabung = '$TanggalBergabung',
-            MasaKerja = '$MasaKerja'
-            WHERE IDKaryawan = '$userID'"; // Sesuaikan dengan ID Karyawan yang sedang login
+        NamaKaryawan = ?, 
+        NIK = ?, 
+        Alamat = ?, 
+        Email = ?, 
+        NoTelp = ?, 
+        TanggalBergabung = ?, 
+        MasaKerja = ? 
+        WHERE IDKaryawan = ?";
+    $stmt = $conn->prepare($updateSql);
+    $stmt->bind_param("sssssssi", $NamaKaryawan, $NIK, $Alamat, $Email, $NoTelp, $TanggalBergabung, $MasaKerja, $userID);
 
-    if ($conn->query($updateSql) === TRUE) {
+    if ($stmt->execute()) {
         $_SESSION['success_message'] = "Profil berhasil diperbarui.";
         addNotification("Profil berhasil diperbarui.");
     } else {
-        $_SESSION['error_message'] = "Error: " . $updateSql . "<br>" . $conn->error;
+        $_SESSION['error_message'] = "Error: " . $stmt->error;
         addNotification("Gagal memperbarui profil.");
     }
 
     // Jika ada perubahan password
     if (!empty($PasswordBaru)) {
         $hashedPassword = password_hash($PasswordBaru, PASSWORD_DEFAULT);
-        $updatePasswordSql = "UPDATE Karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$userID'";
+        $updatePasswordSql = "UPDATE Karyawan SET Password = ? WHERE IDKaryawan = ?";
+        $stmt = $conn->prepare($updatePasswordSql);
+        $stmt->bind_param("si", $hashedPassword, $userID);
 
-        if ($conn->query($updatePasswordSql) === TRUE) {
+        if ($stmt->execute()) {
             $_SESSION['success_message'] .= " Password berhasil diubah.";
             addNotification("Password berhasil diubah.");
         } else {
-            $_SESSION['error_message'] .= " Error updating password: " . $conn->error;
+            $_SESSION['error_message'] .= " Error updating password: " . $stmt->error;
             addNotification("Password gagal diubah.");
         }
     }
