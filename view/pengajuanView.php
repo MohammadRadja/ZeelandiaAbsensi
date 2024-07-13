@@ -55,6 +55,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <option value="Cuti Wisuda">Cuti Wisuda</option>
                         <option value="Cuti Melahiran">Cuti Melahiran</option>
                         <option value="Cuti 1 hari area luar kota">Cuti 1 hari area luar kota</option>
+                        <option value="Cuti 1 hari area luar kota">Cuti Khitan</option>
                     </select>
                 </div>
             </div>

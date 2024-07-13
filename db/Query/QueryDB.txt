@@ -22,7 +22,7 @@ CREATE TABLE PengajuanCuti (
     NamaKaryawan VARCHAR(255) NULL,  
     Jabatan VARCHAR(100) NULL,  
     NIK VARCHAR(50) NULL,  
-    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota') NULL,  
+    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota','cuti khitan') NULL,  
     TanggalAwal DATE NULL,  
     TanggalAkhir DATE NULL,  
     Alasan TEXT NULL,  
