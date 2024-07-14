@@ -40,7 +40,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <td>
                             <div>
                             <strong>
-                                    <?php if (in_array($jabatan, ['Karyawan'])) {
+                                    <?php if (in_array($jabatan, ['Karyawan', 'SPV'])) {
                                         echo htmlspecialchars($row["Status"]);
                                     } else {
                                         $approvedBy = htmlspecialchars($row["ApprovedBy"]);
@@ -62,14 +62,24 @@ if (!isset($_SESSION['IDKaryawan'])) {
                             <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
                         <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
-                        <?php if ($row["Status"] == 'Pending'): ?>
+                        <?php if ($row["Status"] == 'Pending' || $row["Status"] == 'Disetujui oleh SPV' || $row["Status"] == 'Disetujui oleh Manager'): ?>
                             <td>
-                                <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
+                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                <?php elseif ($jabatan == 'Manager' && $row["ApprovedBy"] == 'SPV'): ?>
+                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                <?php elseif ($jabatan == 'HRD' && $row["ApprovedBy"] == 'Manager'): ?>
+                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                <?php else: ?>
+                                    <td>-</td>
+                                <?php endif; ?>
                             </td>
-                            <?php else: ?>
-                                <td>-</td> <!-- Tidak ada aksi jika sudah dieksekusi -->
-                            <?php endif; ?>
+                        <?php else: ?>
+                            <td>-</td>
+                        <?php endif; ?>
                         <?php endif; ?>
                     </tr>
 
