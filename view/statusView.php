@@ -39,51 +39,37 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <td><?php echo htmlspecialchars($row["JenisCuti"]); ?></td>
                         <td>
                             <div>
-                                <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                            <strong>
+                                    <?php if (in_array($jabatan, ['Karyawan'])) {
+                                        echo htmlspecialchars($row["Status"]);
+                                    } else {
+                                        $approvedBy = htmlspecialchars($row["ApprovedBy"]);
+                                        $rejectedBy = htmlspecialchars($row["RejectedBy"]);
+                                        $approvers = array_map('trim', explode(',', $approvedBy));
+                                        $rejectors = array_map('trim', explode(',', $rejectedBy));
+
+                                        if ($row["Status"] == "Disetujui") {
+                                            echo "Disetujui oleh: " . implode(', ', $approvers);
+                                        } elseif ($row["Status"] == "Ditolak") {
+                                            echo "Ditolak oleh: " . implode(', ', $rejectors);
+                                        }
+                                    }
+                                    ?>
+                                </strong>
                             </div>
-                            <?php if (isset($row["ApprovedBy"]) && !empty($row["ApprovedBy"])): ?>
-                                <?php
-                                $approvedBy = htmlspecialchars($row["ApprovedBy"]);
-                                $approvers = array_map('trim', explode(',', $approvedBy));
-                                ?>
-                                <div>
-                                    <?php if ($row["Status"] == 'Disetujui'): ?>
-                                        <?php if (in_array($jabatan, ['Admin', 'HRD', 'Manager', 'SPV'])): ?>
-                                        <ul>
-                                            <?php foreach ($approvers as $approver): ?>
-                                                <li><strong><?php echo htmlspecialchars($approver); ?></strong></li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
-                            <?php if (isset($row["RejectedBy"]) && !empty($row["RejectedBy"])): ?>
-                                <?php
-                                $rejectedBy = htmlspecialchars($row["RejectedBy"]);
-                                $rejectors = array_map('trim', explode(',', $rejectedBy));
-                                ?>
-                                <div>
-                                    <?php if ($row["Status"] == 'Ditolak'): ?>
-                                        <?php if (in_array($jabatan, ['Admin', 'HRD', 'Manager', 'SPV'])): ?>
-                                        <ul>
-                                            <?php foreach ($rejectors as $rejector): ?>
-                                                <li><strong><?php echo htmlspecialchars($rejector); ?></strong></li>
-                                            <?php endforeach; ?>
-                                        </ul>
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endif; ?>
                         </td>
                         <?php if (in_array($jabatan, ['Karyawan'])): ?>
-                        <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
+                            <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
                         <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
+                        <?php if ($row["Status"] == 'Pending'): ?>
                             <td>
                                 <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
                                 <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
                             </td>
+                            <?php else: ?>
+                                <td>-</td> <!-- Tidak ada aksi jika sudah dieksekusi -->
+                            <?php endif; ?>
                         <?php endif; ?>
                     </tr>
 
@@ -132,7 +118,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                     </div>
                 <?php endforeach; ?>
                 <?php if (empty($data)): ?>
-                    <tr><td colspan='<?php echo in_array($jabatan, ['hrd', 'admin', 'manager']) ? 5 : 4; ?>'>Belum ada data pengajuan cuti.</td></tr>
+                    <tr><td colspan='<?php echo in_array($jabatan, ['HRD', 'Manager', 'SPV', 'Admin' ]) ? 5 : 4; ?>'>Belum ada data pengajuan cuti.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

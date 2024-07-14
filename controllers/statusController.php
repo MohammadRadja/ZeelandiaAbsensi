@@ -47,32 +47,31 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 function getPengajuanCutiByRole($userID, $jabatan) {
     global $conn;
     if (in_array($jabatan, ['HRD', 'Manager', 'SPV','Admin'])) {
+        // Hanya ambil pengajuan yang belum ditolak
         $query = "SELECT pc.*, k.NamaKaryawan 
-                FROM PengajuanCuti pc
-                JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan;";
-        $stmt = $conn->prepare($query);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-        $stmt->close();
-        return $data;
+                  FROM PengajuanCuti pc
+                  JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan
+                  WHERE pc.Status != 'Ditolak' OR (pc.Status = 'Ditolak' AND RejectedBy IS NULL);";
     } else {
-        // Query for other roles to get pengajuancuti data for the logged-in user
+        // Query untuk karyawan untuk mendapatkan data pengajuan cuti
         $query = "SELECT * FROM StatusCuti WHERE IDKaryawan = ?";
-        $stmt = $conn->prepare($query);
+    }
+    
+    $stmt = $conn->prepare($query);
+    if (in_array($jabatan, ['HRD', 'Manager', 'Admin', 'SPV'])) {
+        $stmt->execute();
+    } else {
         $stmt->bind_param("i", $userID);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $data = [];
-        while ($row = $result->fetch_assoc()) {
-            $data[] = $row;
-        }
-        $stmt->close();
-        return $data;
     }
+    
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    $stmt->close();
+    return $data;
 }
 
 // Update leave application status 
@@ -82,14 +81,15 @@ function updateStatus($IDPengajuan, $newStatus) {
     // Check if session variables are set
     if (!isset($_SESSION['NamaKaryawan'], $_SESSION['jabatan'])) {
         $_SESSION['message'] = "Gagal: Informasi pengguna tidak ditemukan.";
+        return;
     }
     $approver = $_SESSION['NamaKaryawan'] . ' ' . $_SESSION['jabatan'];
 
     if ($newStatus === 'Disetujui') {
         $query = "UPDATE PengajuanCuti 
-                  SET Status = ?, 
-                      ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '',',',''), ?)
-                  WHERE IDPengajuan = ?";
+                  SET Status = 'Pending', 
+                  ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '',',',''), ?)
+                  WHERE IDPengajuan = ? AND Status = 'Pending'"; // Hanya update jika status 'Pending'
 
         // Jika status disetujui oleh HRD, kurangi sisa cuti karyawan
         if ($_SESSION['jabatan'] === 'HRD') {
@@ -110,11 +110,10 @@ function updateStatus($IDPengajuan, $newStatus) {
         
     } elseif ($newStatus === 'Ditolak') {
         $query = "UPDATE PengajuanCuti 
-                  SET Status = ?, 
-                      RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '',',',''), ?)
-                  WHERE IDPengajuan = ?";
+                  SET Status = 'Pending', 
+                  RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '',',',''), ?)
+                  WHERE IDPengajuan = ? AND Status = 'Pending'"; // Hanya update jika status 'Pending'
     }
-
 
     $stmt = $conn->prepare($query);
     if ($stmt === false) {
