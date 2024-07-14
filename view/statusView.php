@@ -40,7 +40,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <td>
                             <div>
                             <strong>
-                                    <?php if (in_array($jabatan, ['Karyawan', 'SPV'])) {
+                                    <?php if (in_array($jabatan, ['Karyawan','SPV'])) {
                                         echo htmlspecialchars($row["Status"]);
                                     } else {
                                         $approvedBy = htmlspecialchars($row["ApprovedBy"]);
@@ -62,7 +62,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                             <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
                         <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
-                        <?php if ($row["Status"] == 'Pending' || $row["Status"] == 'Disetujui oleh SPV' || $row["Status"] == 'Disetujui oleh Manager'): ?>
+                        <?php if ($row["Status"] == 'Pending' || $row["ApprovedBy"] == 'SPV' || $row["ApprovedBy"] == 'Manager'): ?>
                             <td>
                                 <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
                                     <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>

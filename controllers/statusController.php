@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $IDPengajuan = $_POST['IDPengajuan'];
     if (isset($_POST['approveStatus'])) {
         updateStatus($IDPengajuan, 'Disetujui');
-        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh";
+        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh $jabatan";
     } elseif (isset($_POST['rejectStatus'])) {
         updateStatus($IDPengajuan, 'Ditolak');
-        $_SESSION['message'] = "Cuti berhasil ditolak.";
+        $_SESSION['message'] = "Cuti berhasil ditolak oleh $jabatan";
     }
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
@@ -77,7 +77,6 @@ function getPengajuanCutiByRole($userID, $jabatan) {
 // Update leave application status 
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
-
     // Check if session variables are set
     if (!isset($_SESSION['NamaKaryawan'], $_SESSION['jabatan'])) {
         $_SESSION['message'] = "Gagal: Informasi pengguna tidak ditemukan.";
