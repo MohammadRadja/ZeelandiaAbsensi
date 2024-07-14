@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $IDPengajuan = $_POST['IDPengajuan'];
     if (isset($_POST['approveStatus'])) {
         updateStatus($IDPengajuan, 'Disetujui');
-        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
+        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh";
     } elseif (isset($_POST['rejectStatus'])) {
         updateStatus($IDPengajuan, 'Ditolak');
         $_SESSION['message'] = "Cuti berhasil ditolak.";
@@ -88,15 +88,33 @@ function updateStatus($IDPengajuan, $newStatus) {
     if ($newStatus === 'Disetujui') {
         $query = "UPDATE PengajuanCuti 
                   SET Status = ?, 
-                  ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '', ', ', ''), ?)
+                      ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '',',',''), ?)
                   WHERE IDPengajuan = ?";
+
+        // Jika status disetujui oleh HRD, kurangi sisa cuti karyawan
+        if ($_SESSION['jabatan'] === 'HRD') {
+            $queryReduceLeave = "UPDATE Karyawan k
+                                 JOIN PengajuanCuti pc ON k.IDKaryawan = pc.IDKaryawan
+                                 SET pc.JumlahSisaCuti = pc.JumlahSisaCuti - 1
+                                 WHERE pc.IDPengajuan = ?";
+            $stmtReduce = $conn->prepare($queryReduceLeave);
+            if ($stmtReduce === false) {
+                die("Error: Failed to prepare SQL statement for reducing leave: " . $conn->error);
+            }
+            $stmtReduce->bind_param("i", $IDPengajuan);
+            if (!$stmtReduce->execute()) {
+                die("Error: Failed to execute SQL statement for reducing leave: " . $stmtReduce->error);
+            }
+            $stmtReduce->close();
+        }
         
     } elseif ($newStatus === 'Ditolak') {
         $query = "UPDATE PengajuanCuti 
                   SET Status = ?, 
-                  RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '', ', ', ''), ?)
+                      RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '',',',''), ?)
                   WHERE IDPengajuan = ?";
     }
+
 
     $stmt = $conn->prepare($query);
     if ($stmt === false) {

@@ -28,6 +28,7 @@ CREATE TABLE PengajuanCuti (
     Alasan TEXT NULL,  
     Lampiran VARCHAR(255),  
     Status ENUM('Pending', 'Disetujui', 'Ditolak') NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
+    JumlahSisaCuti INT NULL DEFAULT '12',
     ApprovedBy VARCHAR(255) NULL,
     RejectedBy VARCHAR(255) NULL,
     FOREIGN KEY (IDKaryawan) REFERENCES Karyawan(IDKaryawan)  
@@ -35,7 +36,7 @@ CREATE TABLE PengajuanCuti (
 
 -- Membuat view StatusCuti
 CREATE VIEW StatusCuti AS
-SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, ApprovedBy, RejectedBy
+SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, JumlahSisaCuti, ApprovedBy, RejectedBy
 FROM PengajuanCuti;
 
 -- Membuat view LaporanCuti
