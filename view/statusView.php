@@ -8,6 +8,8 @@ if (!isset($_SESSION['IDKaryawan'])) {
     header("Location: ../view/loginView.php");
     exit("Silahkan Login Terlebih Dahulu");
 }
+
+$jabatan = $_SESSION['jabatan'] ?? null;
 ?>
 <section class="lap-cuti mt-5">
     <div class="container">
@@ -15,18 +17,18 @@ if (!isset($_SESSION['IDKaryawan'])) {
         <table class="table table-bordered table-bordered-black" style="color:black;">
             <thead>
                 <tr>
-                    <?php if (in_array($jabatan, ['Admin','HRD', 'Manager', 'SPV'])) { ?>
+                    <?php if (in_array($jabatan, ['Admin', 'HRD', 'Manager', 'SPV'])): ?>
                         <th>Nama</th>
-                    <?php } ?>
+                    <?php endif; ?>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
                     <th>Status</th>
-                    <?php if (in_array($jabatan, ['Karyawan'])) { ?>
-                    <th>Jumlah Sisa Cuti</th>
-                    <?php } ?>
-                    <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])) { ?>
+                    <?php if ($jabatan == 'Karyawan'): ?>
+                        <th>Jumlah Sisa Cuti</th>
+                    <?php endif; ?>
+                    <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
                         <th>Aksi</th>
-                    <?php } ?>
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
@@ -38,48 +40,54 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <td><?php echo htmlspecialchars($row["TanggalAwal"]); ?></td>
                         <td><?php echo htmlspecialchars($row["JenisCuti"]); ?></td>
                         <td>
-                            <div>
                             <strong>
-                                    <?php if (in_array($jabatan, ['Karyawan','SPV'])) {
-                                        echo htmlspecialchars($row["Status"]);
+                            <?php
+                                if ($jabatan == 'Karyawan') {
+                                    if (strpos($row["ApprovedBy"], 'HRD') !== false) {
+                                      echo "Disetujui";
                                     } else {
-                                        $approvedBy = htmlspecialchars($row["ApprovedBy"]);
-                                        $rejectedBy = htmlspecialchars($row["RejectedBy"]);
-                                        $approvers = array_map('trim', explode(',', $approvedBy));
-                                        $rejectors = array_map('trim', explode(',', $rejectedBy));
-
-                                        if ($row["Status"] == "Disetujui") {
-                                            echo "Disetujui oleh: " . implode(', ', $approvers);
-                                        } elseif ($row["Status"] == "Ditolak") {
-                                            echo "Ditolak oleh: " . implode(', ', $rejectors);
-                                        }
+                                      echo "Pending";
                                     }
-                                    ?>
-                                </strong>
-                            </div>
+                                } else {
+                                    $approvedBy = htmlspecialchars($row["ApprovedBy"]);
+                                    $rejectedBy = htmlspecialchars($row["RejectedBy"]);
+                                    $approvers = array_map('trim', explode(',', $approvedBy));
+                                    $rejectors = array_map('trim', explode(',', $rejectedBy));
+
+                                    if ($row["Status"] == "Disetujui") {
+                                        echo "Disetujui oleh: " . implode(', ', $approvers);
+                                    } elseif ($row["Status"] == "Ditolak") {
+                                        echo "Ditolak oleh: " . implode(', ', $rejectors);
+                                    } else {
+                                        echo htmlspecialchars($row["Status"]); // Tetap tampilkan status jika tidak disetujui atau ditolak
+                                    }
+                                }
+                            ?>
+                            </strong>
                         </td>
-                        <?php if (in_array($jabatan, ['Karyawan'])): ?>
+                        <?php if ($jabatan == 'Karyawan'): ?>
                             <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
                         <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
-                        <?php if ($row["Status"] == 'Pending' || $row["ApprovedBy"] == 'SPV' || $row["ApprovedBy"] == 'Manager'): ?>
                             <td>
-                                <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
-                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-                                <?php elseif ($jabatan == 'Manager' && $row["ApprovedBy"] == 'SPV'): ?>
-                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-                                <?php elseif ($jabatan == 'HRD' && $row["ApprovedBy"] == 'Manager'): ?>
-                                    <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                    <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-                                <?php else: ?>
-                                    <td>-</td>
-                                <?php endif; ?>
-                            </td>
-                        <?php else: ?>
-                            <td>-</td>
-                        <?php endif; ?>
+                            <?php if (strpos($row["ApprovedBy"], 'HRD') === false): ?>
+        <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
+            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+        <?php elseif ($jabatan == 'Manager' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'SPV') !== false): ?>
+            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+        <?php elseif ($jabatan == 'HRD' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'Manager') !== false): ?>
+            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+        <?php else: ?>
+            -
+        <?php endif; ?>
+    <?php else: ?>
+        <!-- Jika sudah dieksekusi oleh HRD, tidak tampilkan tombol -->
+        -
+    <?php endif; ?>
+</td>
                         <?php endif; ?>
                     </tr>
 
@@ -96,9 +104,10 @@ if (!isset($_SESSION['IDKaryawan'])) {
                                 </div>
                                 <div class='modal-footer'>
                                     <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
-                                    <form method='post' action='../controllers/statusController.php'>
+                                    <form method='POST' action='../controllers/statusController.php'>
                                         <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
-                                        <button type='submit' name='approveStatus' class='btn btn-success'>Setujui</button>
+                                        <input type='hidden' name='newStatus' value='Disetujui'>
+                                        <button type='submit' name='updateStatus' class='btn btn-success'>Setujui</button>
                                     </form>
                                 </div>
                             </div>
@@ -118,9 +127,10 @@ if (!isset($_SESSION['IDKaryawan'])) {
                                 </div>
                                 <div class='modal-footer'>
                                     <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
-                                    <form method='post' action='../controllers/statusController.php'>
+                                    <form method='POST' action='../controllers/statusController.php'>
                                         <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
-                                        <button type='submit' name='rejectStatus' class='btn btn-danger'>Tolak</button>
+                                        <input type='hidden' name='newStatus' value='Ditolak'>
+                                        <button type='submit' name='updateStatus' class='btn btn-danger'>Tolak</button>
                                     </form>
                                 </div>
                             </div>

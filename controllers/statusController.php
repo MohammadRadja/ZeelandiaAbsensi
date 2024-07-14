@@ -64,16 +64,14 @@ function getPengajuanCutiByRole($userID, $jabatan) {
 
 // Proses POST untuk acc/block status cuti
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $IDPengajuan = $_POST['IDPengajuan'];
     if (isset($_POST['approveStatus'])) {
-        $_SESSION['message'] = "Received approval request for IDPengajuan=$IDPengajuan";
-        updateStatus($_POST['IDPengajuan'], 'Disetujui');
+        updateStatus($IDPengajuan, 'Disetujui');
         $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh $jabatan";
     } elseif (isset($_POST['rejectStatus'])) {
-        $_SESSION['message'] = "Received rejection request for IDPengajuan=$IDPengajuan";
-        updateStatus($_POST['IDPengajuan'], 'Ditolak');
+        updateStatus($IDPengajuan, 'Ditolak');
         $_SESSION['message'] = "Cuti berhasil ditolak oleh $jabatan";
     }
-    $_SESSION['message'] = "Redirecting to ../view/laporanView.php";
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
@@ -82,46 +80,55 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
 
+    // Cek koneksi database
+    if ($conn->connect_error) {
+        $_SESSION['message'] = "Error: Koneksi database gagal: " . $conn->connect_error;
+        return;
+    }
+
     if (!isset($_SESSION['NamaKaryawan'], $_SESSION['jabatan'])) {
         $_SESSION['message'] = "Gagal: Informasi pengguna tidak ditemukan.";
         return;
     }
+    
     $approver = $_SESSION['NamaKaryawan'] . ' ' . $_SESSION['jabatan'];
 
     if ($newStatus === 'Disetujui') {
         $query = "UPDATE PengajuanCuti 
-                  SET Status = 'Disetujui', 
-                      ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '', ',', ''), ?)
+                  SET Status = ?, 
+                  ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), 
+                  IF(ApprovedBy IS NOT NULL AND ApprovedBy != '', ',', ''), ?)
                   WHERE IDPengajuan = ? AND Status = 'Pending'";
 
         $stmt = $conn->prepare($query);
         if (!$stmt) {
-            $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL.";
+            $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL: " . $conn->error;
             return;
         }
-        $stmt->bind_param("si", $approver, $IDPengajuan);
+        
+        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
         
         if (!$stmt->execute()) {
-            $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL.";
+            $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL: " . $stmt->error;
             return;
         } else {
             $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
         }
         $stmt->close();
 
-        // Mengurangi sisa cuti
+        // Mengurangi sisa cuti jika jabatan adalah HRD
         if ($_SESSION['jabatan'] === 'HRD') {
             $queryReduceLeave = "UPDATE Karyawan 
                                  SET JumlahSisaCuti = JumlahSisaCuti - 1
                                  WHERE IDKaryawan = (SELECT IDKaryawan FROM PengajuanCuti WHERE IDPengajuan = ?)";
             $stmtReduce = $conn->prepare($queryReduceLeave);
             if (!$stmtReduce) {
-                $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk mengurangi cuti.";
+                $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk mengurangi cuti: " . $conn->error;
                 return;
             }
             $stmtReduce->bind_param("i", $IDPengajuan);
             if (!$stmtReduce->execute()) {
-                $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk mengurangi cuti.";
+                $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk mengurangi cuti: " . $stmtReduce->error;
                 return;
             } else {
                 $_SESSION['message'] .= " Sisa cuti berhasil dikurangi.";
@@ -131,30 +138,30 @@ function updateStatus($IDPengajuan, $newStatus) {
         
     } elseif ($newStatus === 'Ditolak') {
         $query = "UPDATE PengajuanCuti 
-                  SET Status = 'Ditolak', 
-                  RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '', ',', ''), NamaKaryawan)
+                  SET Status = ?, 
+                      RejectedBy = CONCAT(IFNULL(RejectedBy, ''), 
+                                         IF(RejectedBy IS NOT NULL AND RejectedBy != '', ',', ''), 
+                                         ?)
                   WHERE IDPengajuan = ? AND Status = 'Pending'";
-        $_SESSION['message'] .= "\nPreparing statement for rejection update";
+        
         $stmt = $conn->prepare($query);
-        if ($stmt === false) {
-            $error = $conn->error;
-            $_SESSION['message'] .= "\nError: Failed to prepare SQL statement: $error";
+        if (!$stmt) {
+            $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk penolakan: " . $conn->error;
             return;
         }
-        $stmt->bind_param("si", $approver, $IDPengajuan);
+        
+        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
         
         if (!$stmt->execute()) {
-            $error = $stmt->error;
-            $_SESSION['message'] .= "\nError: Failed to execute SQL statement: $error";
+            $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk penolakan: " . $stmt->error;
             return;
         }
         $stmt->close();
-        $_SESSION['message'] .= "\nRejection update executed successfully";
+        $_SESSION['message'] .= " Pengajuan cuti berhasil ditolak.";
     }
 
-    $_SESSION['message'] .= "\nupdateStatus function completed for IDPengajuan=$IDPengajuan, newStatus=$newStatus";
+    $_SESSION['message'] .= " Fungsi updateStatus selesai untuk IDPengajuan=$IDPengajuan, newStatus=$newStatus";
 }
-
 
 
 // Pastikan koneksi tetap terbuka selama proses eksekusi
