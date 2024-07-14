@@ -6,31 +6,43 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $IDKaryawan = $_POST['ForgotPass'];
+    $KataKunci = $_POST['ForgotPass'];
     $newPassword = $_POST['newPassword'];
 
-    // Validasi apakah ID Karyawan ada di database
-    $query = "SELECT * FROM karyawan WHERE IDKaryawan = '$IDKaryawan'";
-    $result = $conn->query($query);
+    // Prepare the SELECT statement
+    $stmt = $conn->prepare("SELECT * FROM karyawan WHERE IDKaryawan = ? OR NIK = ? OR NoTelp = ?");
+    
+    // Bind parameters
+    $stmt->bind_param("sss", $KataKunci, $KataKunci, $KataKunci);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
 
     if ($result->num_rows > 0) {
         // ID Karyawan valid, hash password baru
         $hashedPassword = md5($newPassword);
 
-        // Update password di database
-        $updatePasswordQuery = "UPDATE Karyawan SET Password = '$hashedPassword' WHERE IDKaryawan = '$IDKaryawan'";
-        if ($conn->query($updatePasswordQuery) === TRUE) {
+        // Prepare and bind for UPDATE
+       // Prepare the UPDATE statement
+       $updateStmt = $conn->prepare("UPDATE karyawan SET Password = ? WHERE IDKaryawan = ? OR NIK = ? OR NoTelp = ?");
+        
+       // Bind parameters for update
+       $updateStmt->bind_param("ssss", $hashedPassword, $KataKunci, $KataKunci, $KataKunci);
+       if ($updateStmt->execute()) {
             $_SESSION['success_message'] = "Password berhasil direset. Silakan login dengan password baru Anda.";
             header("Location: ../view/forgotpassView.php");
             exit();
         } else {
-            echo "Error: " . $updatePasswordQuery . "<br>" . $conn->error;
+            echo "Error: " . $updateStmt->error;
         }
     } else {
-        $_SESSION['error_message'] = "ID tidak ditemukan";
+        $_SESSION['error_message'] = "$KataKunci tidak ditemukan";
         header("Location: ../view/forgotpassView.php");
         exit();
     }
+
+    $stmt->close();
+    $updateStmt->close();
 }
 $conn->close();
-?>
+?>  

@@ -31,31 +31,25 @@ if (isset($_SESSION['IDKaryawan'], $_SESSION['jabatan'])) {
         unset($_SESSION['message']);
     }
 }
-// Proses POST untuk menyetujui status cuti
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['approveStatus'])) {
+// Proses POST untuk acc/block status cuti
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $IDPengajuan = $_POST['IDPengajuan'];
-    updateStatus($IDPengajuan, 'Disetujui');
-    $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
-    echo '<script>window.location.href="../view/laporanView.php";</script>';
-}
-
-// Proses POST untuk menolak status cuti
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rejectStatus'])) {
-    $IDPengajuan = $_POST['IDPengajuan'];
-    updateStatus($IDPengajuan, 'Ditolak');
-    $_SESSION['message'] = "Cuti berhasil ditolak.";
+    if (isset($_POST['approveStatus'])) {
+        updateStatus($IDPengajuan, 'Disetujui');
+        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
+    } elseif (isset($_POST['rejectStatus'])) {
+        updateStatus($IDPengajuan, 'Ditolak');
+        $_SESSION['message'] = "Cuti berhasil ditolak.";
+    }
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
 function getPengajuanCutiByRole($userID, $jabatan) {
     global $conn;
-
-    if (in_array($jabatan, ['hrd', 'admin', 'manager'])) {
-        // Query for HRD or Manager to get all pengajuancuti data
+    if (in_array($jabatan, ['HRD', 'Manager', 'SPV','Admin'])) {
         $query = "SELECT pc.*, k.NamaKaryawan 
                 FROM PengajuanCuti pc
-                JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan
-                WHERE pc.Status = 'Pending';";
+                JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan;";
         $stmt = $conn->prepare($query);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -67,9 +61,7 @@ function getPengajuanCutiByRole($userID, $jabatan) {
         return $data;
     } else {
         // Query for other roles to get pengajuancuti data for the logged-in user
-        $query = "SELECT TanggalAwal, JenisCuti, Status 
-                  FROM PengajuanCuti 
-                  WHERE IDKaryawan = ?";
+        $query = "SELECT * FROM StatusCuti WHERE IDKaryawan = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $userID);
         $stmt->execute();
@@ -83,14 +75,43 @@ function getPengajuanCutiByRole($userID, $jabatan) {
     }
 }
 
+// Update leave application status 
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
-    $query = "UPDATE PengajuanCuti SET Status = ? WHERE IDPengajuan = ?";
+
+    // Check if session variables are set
+    if (!isset($_SESSION['NamaKaryawan'], $_SESSION['jabatan'])) {
+        $_SESSION['message'] = "Gagal: Informasi pengguna tidak ditemukan.";
+    }
+    $approver = $_SESSION['NamaKaryawan'] . ' ' . $_SESSION['jabatan'];
+
+    if ($newStatus === 'Disetujui') {
+        $query = "UPDATE PengajuanCuti 
+                  SET Status = ?, 
+                  ApprovedBy = CONCAT(IFNULL(ApprovedBy, ''), IF(ApprovedBy IS NOT NULL AND ApprovedBy != '', ', ', ''), ?)
+                  WHERE IDPengajuan = ?";
+        
+    } elseif ($newStatus === 'Ditolak') {
+        $query = "UPDATE PengajuanCuti 
+                  SET Status = ?, 
+                  RejectedBy = CONCAT(IFNULL(RejectedBy, ''), IF(RejectedBy IS NOT NULL AND RejectedBy != '', ', ', ''), ?)
+                  WHERE IDPengajuan = ?";
+    }
+
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("si", $newStatus, $IDPengajuan);
-    $stmt->execute();
+    if ($stmt === false) {
+        die("Error: Failed to prepare SQL statement: " . $conn->error);
+    }
+
+    $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
+    
+    if (!$stmt->execute()) {
+        die("Error: Failed to execute SQL statement: " . $stmt->error);
+    }
+
     $stmt->close();
 }
+
 
 // Pastikan koneksi tetap terbuka selama proses eksekusi
 if ($conn->connect_error) {

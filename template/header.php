@@ -41,7 +41,7 @@ unset($_SESSION['notifications']);
             </div>
             <div class="collapse navbar-collapse " id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                <?php if ($jabatan == 'karyawan' || $jabatan == 'admin') { ?>
+                <?php if ($jabatan == 'Karyawan') { ?>
                         <li class="nav-item">
                             <a class="nav-link" aria-current="page" href="dashboardView.php">DASHBOARD</a>
                         </li>
@@ -57,9 +57,28 @@ unset($_SESSION['notifications']);
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">LOG OUT</a>
                         </li>
-                    <?php } elseif ($jabatan == 'hrd' || $jabatan == 'manager') { ?>
+                    <?php } elseif ($jabatan == 'HRD' || $jabatan == 'Manager' || $jabatan == 'SPV') { ?>
                         <li class="nav-item">
                             <a class="nav-link" href="profilView.php">PROFILE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="laporanView.php">LAPORAN CUTI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">LOG OUT</a>
+                        </li>
+                    <?php } elseif ($jabatan == 'Admin') { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" aria-current="page" href="dashboardView.php">DASHBOARD</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="profilView.php">PROFILE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pengajuanView.php">PENGAJUAN CUTI</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="statusView.php">STATUS PENGAJUAN</a>

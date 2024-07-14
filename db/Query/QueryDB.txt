@@ -3,7 +3,7 @@ CREATE TABLE Karyawan (
     IDKaryawan INT PRIMARY KEY AUTO_INCREMENT,  -- Primary Key dengan auto increment
     Foto VARCHAR(255), -- Foto Karyawan
     NamaKaryawan VARCHAR(255) NULL,  -- Nama karyawan
-    Jabatan ENUM('karyawan', 'hrd', 'manager') NULL,  -- Jabatan karyawan
+    Jabatan ENUM('Karyawan', 'HRD', 'Manager', 'Admin', 'SPV') NULL,  -- Jabatan karyawan
     NIK VARCHAR(50) UNIQUE NULL,  -- Nomor Induk Kependudukan, harus unik
     Email VARCHAR(255) UNIQUE NULL,  -- Email karyawan, harus unik
     TanggalLahir DATE NULL,  -- Tanggal lahir karyawan
@@ -28,12 +28,14 @@ CREATE TABLE PengajuanCuti (
     Alasan TEXT NULL,  
     Lampiran VARCHAR(255),  
     Status ENUM('Pending', 'Disetujui', 'Ditolak') NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
+    ApprovedBy VARCHAR(255) NULL,
+    RejectedBy VARCHAR(255) NULL,
     FOREIGN KEY (IDKaryawan) REFERENCES Karyawan(IDKaryawan)  
 );
 
 -- Membuat view StatusCuti
 CREATE VIEW StatusCuti AS
-SELECT TanggalAwal, JenisCuti, Status
+SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, ApprovedBy, RejectedBy
 FROM PengajuanCuti;
 
 -- Membuat view LaporanCuti
