@@ -96,7 +96,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                                 </div>
                                 <div class='modal-footer'>
                                     <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
-                                    <form method='post'>
+                                    <form method='post' action='../controllers/statusController.php'>
                                         <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
                                         <button type='submit' name='approveStatus' class='btn btn-success'>Setujui</button>
                                     </form>
@@ -118,7 +118,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
                                 </div>
                                 <div class='modal-footer'>
                                     <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>Batal</button>
-                                    <form method='post'>
+                                    <form method='post' action='../controllers/statusController.php'>
                                         <input type='hidden' name='IDPengajuan' value='<?php echo htmlspecialchars($row["IDPengajuan"]); ?>'>
                                         <button type='submit' name='rejectStatus' class='btn btn-danger'>Tolak</button>
                                     </form>
