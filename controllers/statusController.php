@@ -118,9 +118,9 @@ function updateStatus($IDPengajuan, $newStatus) {
 
         // Mengurangi sisa cuti jika jabatan adalah HRD
         if ($_SESSION['jabatan'] === 'HRD') {
-            $queryReduceLeave = "UPDATE Karyawan 
+            $queryReduceLeave = "UPDATE PengajuanCuti 
                                  SET JumlahSisaCuti = JumlahSisaCuti - 1
-                                 WHERE IDKaryawan = (SELECT IDKaryawan FROM PengajuanCuti WHERE IDPengajuan = ?)";
+                                 WHERE IDPengajuan = ?";
             $stmtReduce = $conn->prepare($queryReduceLeave);
             if (!$stmtReduce) {
                 $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk mengurangi cuti: " . $conn->error;
@@ -138,11 +138,12 @@ function updateStatus($IDPengajuan, $newStatus) {
         
     } elseif ($newStatus === 'Ditolak') {
         $query = "UPDATE PengajuanCuti 
-                  SET Status = ?, 
-                      RejectedBy = CONCAT(IFNULL(RejectedBy, ''), 
-                                         IF(RejectedBy IS NOT NULL AND RejectedBy != '', ',', ''), 
-                                         ?)
-                  WHERE IDPengajuan = ? AND Status = 'Pending'";
+          SET Status = ?, 
+              RejectedBy = CASE 
+                            WHEN RejectedBy IS NULL OR RejectedBy = '' THEN ?
+                            ELSE CONCAT(RejectedBy, ',', ?) 
+                           END
+          WHERE IDPengajuan = ? AND Status = 'Pending'";
         
         $stmt = $conn->prepare($query);
         if (!$stmt) {

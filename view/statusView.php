@@ -9,6 +9,7 @@ if (!isset($_SESSION['IDKaryawan'])) {
     exit("Silahkan Login Terlebih Dahulu");
 }
 
+
 $jabatan = $_SESSION['jabatan'] ?? null;
 ?>
 <section class="lap-cuti mt-5">
