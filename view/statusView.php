@@ -4,7 +4,6 @@ include('../controllers/statusController.php');
 
 // Periksa apakah sesi login ada
 if (!isset($_SESSION['IDKaryawan'])) {
-    // Jika tidak ada sesi login, arahkan ke halaman login
     header("Location: ../view/loginView.php");
     exit("Silahkan Login Terlebih Dahulu");
 }
@@ -15,13 +14,14 @@ if (!isset($_SESSION['IDKaryawan'])) {
         <table class="table table-bordered table-bordered-black" style="color:black;">
             <thead>
                 <tr>
-                    <?php if (in_array($jabatan, ['Admin','HRD', 'Manager', 'SPV'])) { ?>
+                    <?php if (in_array($jabatan, ['Admin', 'HRD', 'Manager', 'SPV'])) { ?>
                         <th>Nama</th>
                     <?php } ?>
                     <th>Tanggal</th>
                     <th>Jenis Cuti</th>
-                    <?php if (in_array($jabatan, ['Karyawan'])) { ?>
                     <th>Status</th>
+                    <?php if ($jabatan == 'Karyawan') { ?>
+                        <th>Jumlah Sisa Cuti</th>
                     <?php } ?>
                     <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])) { ?>
                         <th>Aksi</th>
@@ -38,30 +38,63 @@ if (!isset($_SESSION['IDKaryawan'])) {
                         <td><?php echo htmlspecialchars($row["JenisCuti"]); ?></td>
                         <td>
                             <div>
-                                <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                                <strong>
+                                    <?php if ($jabatan == 'Karyawan'): ?>
+                                        <?php if ($row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'HRD') !== false): ?>
+                                            <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                                        <?php elseif ($row["Status"] == 'Ditolak' && strpos($row["ApprovedBy"], 'HRD') !== false): ?>
+                                            <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                                        <?php elseif ($row["Status"] == 'Disetujui' && (strpos($row["ApprovedBy"], 'SPV') !== false || strpos($row["ApprovedBy"], 'Manager') !== false)): ?>
+                                            <strong>Pending</strong>
+                                        <?php else: ?>
+                                            <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <strong><?php echo htmlspecialchars($row["Status"]); ?></strong>
+                                    <?php endif; ?>
+                                </strong>
                             </div>
-                            <?php if ($row["Status"] == 'Disetujui' && !empty($row["ApprovedBy"])): ?>
-                                <ul>
-                                    <?php
-                                    $approvedBy = array_map('trim', explode(',', htmlspecialchars($row["ApprovedBy"])));
-                                    foreach ($approvedBy as $approver): ?>
-                                        <li><strong><?php echo htmlspecialchars($approver); ?></strong></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php elseif ($row["Status"] == 'Ditolak' && !empty($row["RejectedBy"])): ?>
-                                <ul>
-                                    <?php
-                                    $rejectedBy = array_map('trim', explode(',', htmlspecialchars($row["RejectedBy"])));
-                                    foreach ($rejectedBy as $rejector): ?>
-                                        <li><strong><?php echo htmlspecialchars($rejector); ?></strong></li>
-                                    <?php endforeach; ?>
-                                </ul>
+                            <?php if ($jabatan != 'Karyawan'): ?>
+                                <?php if ($row["Status"] == 'Disetujui' && !empty($row["ApprovedBy"])): ?>
+                                    <ul>
+                                        <?php
+                                        $approvedBy = array_map('trim', explode(',', htmlspecialchars($row["ApprovedBy"])));
+                                        foreach ($approvedBy as $approver): ?>
+                                            <li><strong><?php echo htmlspecialchars($approver); ?></strong></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php elseif ($row["Status"] == 'Ditolak' && !empty($row["RejectedBy"])): ?>
+                                    <ul>
+                                        <?php
+                                        $rejectedBy = array_map('trim', explode(',', htmlspecialchars($row["RejectedBy"])));
+                                        foreach ($rejectedBy as $rejector): ?>
+                                            <li><strong><?php echo htmlspecialchars($rejector); ?></strong></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </td>
+                        <?php if ($jabatan == 'Karyawan'): ?>
+                            <td><?php echo htmlspecialchars($row["JumlahSisaCuti"]); ?></td>
+                        <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
                             <td>
-                                <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-                                <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                <?php if (strpos($row["ApprovedBy"], 'HRD') === false): ?>
+                                    <?php if ($row["Status"] == 'Pending' && $jabatan == 'SPV'): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php elseif ($row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'SPV') !== false && strpos($row["ApprovedBy"], 'Manager') === false && $jabatan == 'Manager'): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php elseif ($row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'Manager') !== false && $jabatan == 'HRD'): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    -
+                                <?php endif; ?>
                             </td>
                         <?php endif; ?>
                     </tr>
