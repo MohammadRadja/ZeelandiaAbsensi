@@ -22,13 +22,12 @@ CREATE TABLE PengajuanCuti (
     NamaKaryawan VARCHAR(255) NULL,  
     Jabatan VARCHAR(100) NULL,  
     NIK VARCHAR(50) NULL,  
-    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti khitan', 'cuti 1 hari area luar kota') NULL,  
+    JenisCuti ENUM('cuti sakit', 'cuti meninggal (keluarga)', 'cuti sidang sarjana', 'cuti wisuda', 'cuti melahirkan', 'cuti 1 hari area luar kota','cuti khitan') NULL,  
     TanggalAwal DATE NULL,  
     TanggalAkhir DATE NULL,  
     Alasan TEXT NULL,  
     Lampiran VARCHAR(255),  
     Status ENUM('Pending', 'Disetujui', 'Ditolak') NULL DEFAULT 'Pending',  -- Kolom Status ditambahkan
-    JumlahSisaCuti INT NULL DEFAULT '12',
     JumlahSisaCuti INT DEFAULT '12',
     ApprovedBy VARCHAR(255) NULL,
     RejectedBy VARCHAR(255) NULL,
@@ -37,7 +36,7 @@ CREATE TABLE PengajuanCuti (
 
 -- Membuat view StatusCuti
 CREATE VIEW StatusCuti AS
-SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, JumlahSisaCuti, ApprovedBy, RejectedBy
+SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, ApprovedBy, RejectedBy
 FROM PengajuanCuti;
 
 -- Membuat view LaporanCuti
