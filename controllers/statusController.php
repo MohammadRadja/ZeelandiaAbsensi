@@ -71,6 +71,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (isset($_POST['rejectStatus'])) {
         updateStatus($IDPengajuan, 'Ditolak');
         $_SESSION['message'] = "Cuti berhasil ditolak oleh ". $_SESSION['jabatan'];
+        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui $jabatan";
+    } elseif (isset($_POST['rejectStatus'])) {
+        updateStatus($IDPengajuan, 'Ditolak');
+        $_SESSION['message'] = "Cuti berhasil ditolak $jabatan";
     }
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
@@ -158,3 +162,62 @@ if ($conn->connect_error) {
     die("Koneksi database gagal: " . $conn->connect_error);
 }
 ?>
+    $stmt = $conn->prepare($query);
+    if ($stmt === false) {
+        die("Error: Failed to prepare SQL statement: " . $conn->error);
+    }
+
+    $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
+    
+    if (!$stmt->execute()) {
+        die("Error: Failed to execute SQL statement: " . $stmt->error);
+    }
+
+    //HRD Approved
+    if ($newStatus === 'Disetujui' && strpos($_SESSION['jabatan'], 'HRD') !== false) {
+        $query = "SELECT JumlahSisaCuti, DATEDIFF           (TanggalAkhir, TanggalAwal) + 1 AS JumlahHari
+                  FROM PengajuanCuti 
+                  WHERE IDPengajuan = ?";
+        $stmt = $conn->prepare($query);
+        if ($stmt === false) {
+            die("Error: Failed to prepare SQL statement: " . $conn->error);
+        }
+
+        $stmt->bind_param("i", $IDPengajuan);
+        if (!$stmt->execute()) {
+            die("Error: Failed to execute SQL statement: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $sisaCuti = $row['JumlahSisaCuti'];
+            $hariCuti = $row['JumlahHari'];
+
+            // Calculate new remaining leave days
+            $sisaCutiBaru = $sisaCuti - $hariCuti;
+            if ($sisaCutiBaru < 0) {
+                $sisaCutiBaru = 0;
+            }
+
+            // Update the remaining leave days in the database
+            $query = "UPDATE PengajuanCuti 
+                      SET JumlahSisaCuti = ? 
+                      WHERE IDPengajuan = ?";
+            $stmt = $conn->prepare($query);
+            if ($stmt === false) {
+                die("Error: Failed to prepare SQL statement: " . $conn->error);
+            }
+
+            $stmt->bind_param("ii", $sisaCutiBaru, $IDPengajuan);
+            if (!$stmt->execute()) {
+                die("Error: Failed to execute SQL statement: " . $stmt->error);
+            }
+        }
+    }
+
+    $stmt->close();
+}
+
+
+>>>>>>> 4f4516c2e680b7700d7c9bc89f7e586e11ab3c3d

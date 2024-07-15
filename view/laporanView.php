@@ -31,7 +31,7 @@ exit();
                         echo "<td>" . $data['NamaKaryawan'] . "</td>";
                         echo "<td>" . $data['TanggalAwal'] . "</td>";
                         echo "<td>" . $data['JenisCuti'] . "</td>";
-                        echo "<td>" . $data['Jumlah hari'] . "</td>"; // Sesuaikan dengan nama kolom yang benar
+                        echo "<td>" . $data['JumlahHari'] . "</td>"; // Sesuaikan dengan nama kolom yang benar
                         echo "</tr>";
                     }
                 } else {
