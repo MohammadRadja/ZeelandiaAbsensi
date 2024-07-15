@@ -21,33 +21,31 @@ function addNotification($message) {
 if (isset($_SESSION['IDKaryawan'], $_SESSION['jabatan'])) {
     $userID = $_SESSION['IDKaryawan'];
     $jabatan = $_SESSION['jabatan'];
-    error_log("User ID: $userID, Jabatan: $jabatan");
 
     // Mendapatkan data pengajuan cuti berdasarkan role pengguna
     $data = getPengajuanCutiByRole($userID, $jabatan);
-} else {
-    error_log("User ID atau jabatan tidak ditemukan dalam session.");
+
+    // Menampilkan pesan jika ada yang tersimpan di session
+    if (isset($_SESSION['message'])) {
+        echo "<div class='alert alert-success'>" . $_SESSION['message'] . "</div>";
+        unset($_SESSION['message']);
+    }
 }
 
-// Fungsi untuk mendapatkan data pengajuan cuti
 function getPengajuanCutiByRole($userID, $jabatan) {
     global $conn;
-    if (in_array($jabatan, ['HRD', 'Manager', 'SPV', 'Admin'])) {
+    if (in_array($jabatan, ['HRD', 'Manager', 'SPV','Admin'])) {
         // Hanya ambil pengajuan yang belum ditolak
         $query = "SELECT pc.*, k.NamaKaryawan 
                   FROM PengajuanCuti pc
                   JOIN Karyawan k ON pc.IDKaryawan = k.IDKaryawan
                   WHERE pc.Status != 'Ditolak' OR (pc.Status = 'Ditolak' AND RejectedBy IS NULL);";
     } else {
+        // Query untuk karyawan untuk mendapatkan data pengajuan cuti
         $query = "SELECT * FROM StatusCuti WHERE IDKaryawan = ?";
     }
     
     $stmt = $conn->prepare($query);
-    if (!$stmt) {
-        error_log("Gagal menyiapkan pernyataan SQL: " . $conn->error);
-        return [];
-    }
-
     if (in_array($jabatan, ['HRD', 'Manager', 'Admin', 'SPV'])) {
         $stmt->execute();
     } else {
@@ -77,18 +75,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
+
 // Update leave application status 
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
 
     if (!isset($_SESSION['NamaKaryawan'], $_SESSION['jabatan'])) {
         $_SESSION['message'] = "Gagal: Informasi pengguna tidak ditemukan.";
-        error_log("Gagal: Informasi pengguna tidak ditemukan.");
         return;
     }
     
     $approver = $_SESSION['NamaKaryawan'] . ' ' . $_SESSION['jabatan'];
-    error_log("Update status untuk IDPengajuan: $IDPengajuan, Status Baru: $newStatus, Diajukan oleh: $approver");
 
     if ($newStatus === 'Disetujui') {
         $query = "UPDATE PengajuanCuti 
@@ -99,20 +96,19 @@ function updateStatus($IDPengajuan, $newStatus) {
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL: " . $conn->error;
-            error_log("Error: Gagal menyiapkan pernyataan SQL: " . $conn->error);
             return;
         }
 
-        $stmt->bind_param("sssi", $newStatus, $approver, $approver, $IDPengajuan);
+        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
+        error_log("Executing query: $query with values: $newStatus, $approver, $IDPengajuan");
         
         if (!$stmt->execute()) {
             $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL: " . $stmt->error;
-            error_log("Error executing query: " . $stmt->error);
             return;
         } else {
             $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
-            error_log("Pengajuan cuti berhasil disetujui untuk IDPengajuan=$IDPengajuan");
         }
+        var_dump($newStatus, $approver, $IDPengajuan);
         $stmt->close();
 
         // Mengurangi sisa cuti jika jabatan adalah HRD
@@ -123,17 +119,14 @@ function updateStatus($IDPengajuan, $newStatus) {
             $stmtReduce = $conn->prepare($queryReduceLeave);
             if (!$stmtReduce) {
                 $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk mengurangi cuti: " . $conn->error;
-                error_log("Error: Gagal menyiapkan pernyataan SQL untuk mengurangi cuti: " . $conn->error);
                 return;
             }
             $stmtReduce->bind_param("i", $IDPengajuan);
             if (!$stmtReduce->execute()) {
                 $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk mengurangi cuti: " . $stmtReduce->error;
-                error_log("Error reducing leave: " . $stmtReduce->error);
                 return;
             } else {
                 $_SESSION['message'] .= " Sisa cuti berhasil dikurangi.";
-                error_log("Sisa cuti berhasil dikurangi untuk IDPengajuan=$IDPengajuan");
             }
             $stmtReduce->close();
         }
@@ -147,27 +140,26 @@ function updateStatus($IDPengajuan, $newStatus) {
         $stmt = $conn->prepare($query);
         if (!$stmt) {
             $_SESSION['message'] = "Error: Gagal menyiapkan pernyataan SQL untuk penolakan: " . $conn->error;
-            error_log("Error: Gagal menyiapkan pernyataan SQL untuk penolakan: " . $conn->error);
             return;
         }
         
-        $stmt->bind_param("sssi", $newStatus, $approver, $approver, $IDPengajuan);
-
+        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
+        error_log("Executing query: $query with values: $newStatus, $approver, $IDPengajuan");
+        
         if (!$stmt->execute()) {
             $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk penolakan: " . $stmt->error;
-            error_log("Error executing query: " . $stmt->error);
             return;
         }
         $stmt->close();
         $_SESSION['message'] .= " Pengajuan cuti berhasil ditolak.";
-        error_log("Pengajuan cuti berhasil ditolak untuk IDPengajuan=$IDPengajuan");
     }
 
     $_SESSION['message'] .= " Fungsi updateStatus selesai untuk IDPengajuan=$IDPengajuan, newStatus=$newStatus";
 }
 
+
 // Pastikan koneksi tetap terbuka selama proses eksekusi
 if ($conn->connect_error) {
     die("Koneksi database gagal: " . $conn->connect_error);
 }
-?>
+
