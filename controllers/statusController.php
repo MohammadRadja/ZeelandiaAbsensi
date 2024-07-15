@@ -34,7 +34,7 @@ if (isset($_SESSION['IDKaryawan'], $_SESSION['jabatan'])) {
 
 function getPengajuanCutiByRole($userID, $jabatan) {
     global $conn;
-    if (in_array($jabatan, ['HRD', 'Manager', 'SPV','Admin'])) {
+    if (in_array($jabatan, ['HRD', 'Manager', 'SPV', 'Admin'])) {
         // Hanya ambil pengajuan yang belum ditolak
         $query = "SELECT pc.*, k.NamaKaryawan 
                   FROM PengajuanCuti pc
@@ -75,8 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
 
-
-// Update leave application status 
+// Fungsi untuk memperbarui status cuti
 function updateStatus($IDPengajuan, $newStatus) {
     global $conn;
 
@@ -89,9 +88,9 @@ function updateStatus($IDPengajuan, $newStatus) {
 
     if ($newStatus === 'Disetujui') {
         $query = "UPDATE PengajuanCuti 
-          SET Status = ?, 
-              ApprovedBy = IF(ApprovedBy IS NULL OR ApprovedBy = '', ?, CONCAT(ApprovedBy, ',', ?))
-          WHERE IDPengajuan = ? AND Status = 'Pending'";
+                  SET Status = ?, 
+                      ApprovedBy = IF(ApprovedBy IS NULL OR ApprovedBy = '', ?, CONCAT(ApprovedBy, ',', ?))
+                  WHERE IDPengajuan = ? AND Status = 'Pending'";
 
         $stmt = $conn->prepare($query);
         if (!$stmt) {
@@ -107,7 +106,6 @@ function updateStatus($IDPengajuan, $newStatus) {
         } else {
             $_SESSION['message'] = "Pengajuan cuti berhasil disetujui.";
         }
-        var_dump($newStatus, $approver, $IDPengajuan);
         $stmt->close();
 
         // Mengurangi sisa cuti jika jabatan adalah HRD
@@ -132,9 +130,9 @@ function updateStatus($IDPengajuan, $newStatus) {
         
     } elseif ($newStatus === 'Ditolak') {
         $query = "UPDATE PengajuanCuti 
-              SET Status = ?, 
-                  RejectedBy = IF(RejectedBy IS NULL OR RejectedBy = '', ?, CONCAT(RejectedBy, ',', ?))
-              WHERE IDPengajuan = ? AND Status = 'Pending'";
+                  SET Status = ?, 
+                      RejectedBy = IF(RejectedBy IS NULL OR RejectedBy = '', ?, CONCAT(RejectedBy, ',', ?))
+                  WHERE IDPengajuan = ? AND Status = 'Pending'";
         
         $stmt = $conn->prepare($query);
         if (!$stmt) {
@@ -143,7 +141,7 @@ function updateStatus($IDPengajuan, $newStatus) {
         }
         
         $stmt->bind_param("sssi", $newStatus, $approver, $approver, $IDPengajuan);
-            
+
         if (!$stmt->execute()) {
             $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk penolakan: " . $stmt->error;
             return;
@@ -155,9 +153,8 @@ function updateStatus($IDPengajuan, $newStatus) {
     $_SESSION['message'] .= " Fungsi updateStatus selesai untuk IDPengajuan=$IDPengajuan, newStatus=$newStatus";
 }
 
-
 // Pastikan koneksi tetap terbuka selama proses eksekusi
 if ($conn->connect_error) {
     die("Koneksi database gagal: " . $conn->connect_error);
 }
-
+?>

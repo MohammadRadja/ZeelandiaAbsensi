@@ -70,24 +70,24 @@ $jabatan = $_SESSION['jabatan'] ?? null;
                         <?php endif; ?>
                         <?php if (in_array($jabatan, ['HRD', 'Manager', 'SPV'])): ?>
                             <td>
-                            <?php if (strpos($row["ApprovedBy"], 'HRD') === false): ?>
-        <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
-            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-        <?php elseif ($jabatan == 'Manager' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'SPV') !== false): ?>
-            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-        <?php elseif ($jabatan == 'HRD' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'Manager') !== false): ?>
-            <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
-            <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
-        <?php else: ?>
-            -
-        <?php endif; ?>
-    <?php else: ?>
-        <!-- Jika sudah dieksekusi oleh HRD, tidak tampilkan tombol -->
-        -
-    <?php endif; ?>
-</td>
+                                <?php if (strpos($row["ApprovedBy"], 'HRD') === false): ?>
+                                    <?php if ($jabatan == 'SPV' && $row["Status"] == 'Pending'): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php elseif ($jabatan == 'Manager' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'SPV') !== false): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php elseif ($jabatan == 'HRD' && $row["Status"] == 'Disetujui' && strpos($row["ApprovedBy"], 'Manager') !== false): ?>
+                                        <button type='button' class='btn btn-success btn-sm' data-bs-toggle='modal' data-bs-target='#modalApprove<?php echo $row["IDPengajuan"]; ?>'>Setujui</button>
+                                        <button type='button' class='btn btn-danger btn-sm' data-bs-toggle='modal' data-bs-target='#modalReject<?php echo $row["IDPengajuan"]; ?>'>Tolak</button>
+                                    <?php else: ?>
+                                        -
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <!-- Jika sudah dieksekusi oleh HRD, tidak tampilkan tombol -->
+                                    -
+                                <?php endif; ?>
+                            </td>
                         <?php endif; ?>
                     </tr>
 
@@ -138,7 +138,7 @@ $jabatan = $_SESSION['jabatan'] ?? null;
                     </div>
                 <?php endforeach; ?>
                 <?php if (empty($data)): ?>
-                    <tr><td colspan='<?php echo in_array($jabatan, ['HRD', 'Manager', 'SPV', 'Admin' ]) ? 5 : 4; ?>'>Belum ada data pengajuan cuti.</td></tr>
+                    <tr><td colspan='<?php echo in_array($jabatan, ['HRD', 'Manager', 'SPV', 'Admin']) ? 5 : 4; ?>'>Belum ada data pengajuan cuti.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -148,3 +148,4 @@ $jabatan = $_SESSION['jabatan'] ?? null;
 <?php
 include('../template/footer.php');
 ?>
+    
