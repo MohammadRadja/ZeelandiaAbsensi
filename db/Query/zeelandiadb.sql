@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Waktu pembuatan: 02 Jul 2024 pada 12.39
+-- Waktu pembuatan: 15 Jul 2024 pada 13.28
 -- Versi server: 8.0.30
 -- Versi PHP: 8.0.30
 
@@ -29,43 +29,19 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `karyawan` (
   `IDKaryawan` int NOT NULL,
-  `NamaKaryawan` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Jabatan` enum('karyawan','hrd','manager') NOT NULL,
-  `NIK` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Foto` varchar(255) DEFAULT NULL,
+  `NamaKaryawan` varchar(255) DEFAULT NULL,
+  `Jabatan` enum('Karyawan','HRD','Manager','Admin','SPV') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `NIK` varchar(50) DEFAULT NULL,
+  `Email` varchar(255) DEFAULT NULL,
   `TanggalLahir` date DEFAULT NULL,
   `TanggalBergabung` date DEFAULT NULL,
-  `Alamat` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-  `NoTelp` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `Alamat` text,
+  `NoTelp` varchar(15) DEFAULT NULL,
   `MasaKerja` int DEFAULT NULL,
-  `Username` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `Foto` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL
+  `Username` varchar(50) DEFAULT NULL,
+  `Password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data untuk tabel `karyawan`
---
-
-INSERT INTO `karyawan` (`IDKaryawan`, `NamaKaryawan`, `Jabatan`, `NIK`, `Email`, `TanggalLahir`, `TanggalBergabung`, `Alamat`, `NoTelp`, `MasaKerja`, `Username`, `Password`, `Foto`) VALUES
-(1111, 'test', 'hrd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'test', '098f6bcd4621d373cade4e832627b4f6', NULL),
-(11211, 'radja', 'karyawan', '11211', 'radja.amri28@gmail.com', NULL, '2024-06-30', 'Pesona Parahiyangan', '11211', 0, 'radja', '42afcd328885ec205cb656b53194e816', NULL);
-
---
--- Trigger `karyawan`
---
-DELIMITER $$
-CREATE TRIGGER `before_insert_karyawan` BEFORE INSERT ON `karyawan` FOR EACH ROW BEGIN
-    SET NEW.MasaKerja = TIMESTAMPDIFF(YEAR, NEW.TanggalBergabung, CURDATE());
-END
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `before_update_karyawan` BEFORE UPDATE ON `karyawan` FOR EACH ROW BEGIN
-    SET NEW.MasaKerja = TIMESTAMPDIFF(YEAR, NEW.TanggalBergabung, CURDATE());
-END
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -75,11 +51,13 @@ DELIMITER ;
 --
 CREATE TABLE `laporancuti` (
 `No` bigint unsigned
+,`IDPengajuan` int
 ,`IDKaryawan` int
 ,`NamaKaryawan` varchar(255)
 ,`TanggalAwal` date
-,`JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti 1 hari area luar kota')
-,`Jumlah hari` bigint
+,`JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti khitan','cuti 1 hari area luar kota')
+,`JumlahHari` bigint
+,`Status` enum('Pending','Disetujui','Ditolak')
 );
 
 -- --------------------------------------------------------
@@ -91,23 +69,19 @@ CREATE TABLE `laporancuti` (
 CREATE TABLE `pengajuancuti` (
   `IDPengajuan` int NOT NULL,
   `IDKaryawan` int DEFAULT NULL,
-  `NamaKaryawan` varchar(255) NOT NULL,
-  `Jabatan` varchar(100) NOT NULL,
-  `NIK` varchar(50) NOT NULL,
-  `JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti 1 hari area luar kota') NOT NULL,
-  `TanggalAwal` date NOT NULL,
-  `TanggalAkhir` date NOT NULL,
-  `Alasan` text NOT NULL,
+  `NamaKaryawan` varchar(255) DEFAULT NULL,
+  `Jabatan` varchar(100) DEFAULT NULL,
+  `NIK` varchar(50) DEFAULT NULL,
+  `JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti khitan','cuti 1 hari area luar kota') DEFAULT NULL,
+  `TanggalAwal` date DEFAULT NULL,
+  `TanggalAkhir` date DEFAULT NULL,
+  `Alasan` text,
   `Lampiran` varchar(255) DEFAULT NULL,
-  `Status` enum('Pending','Disetujui','Ditolak') NOT NULL DEFAULT 'Pending'
+  `Status` enum('Pending','Disetujui','Ditolak') DEFAULT 'Pending',
+  `JumlahSisaCuti` int DEFAULT '12',
+  `ApprovedBy` varchar(255) DEFAULT NULL,
+  `RejectedBy` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data untuk tabel `pengajuancuti`
---
-
-INSERT INTO `pengajuancuti` (`IDPengajuan`, `IDKaryawan`, `NamaKaryawan`, `Jabatan`, `NIK`, `JenisCuti`, `TanggalAwal`, `TanggalAkhir`, `Alasan`, `Lampiran`, `Status`) VALUES
-(4, 11211, 'Radja', 'Karyawan', '11211', 'cuti sakit', '2024-06-29', '2024-06-30', 'Sakit', NULL, 'Disetujui');
 
 -- --------------------------------------------------------
 
@@ -116,9 +90,13 @@ INSERT INTO `pengajuancuti` (`IDPengajuan`, `IDKaryawan`, `NamaKaryawan`, `Jabat
 -- (Lihat di bawah untuk tampilan aktual)
 --
 CREATE TABLE `statuscuti` (
-`TanggalAwal` date
-,`JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti 1 hari area luar kota')
+`IDKaryawan` int
+,`TanggalAwal` date
+,`JenisCuti` enum('cuti sakit','cuti meninggal (keluarga)','cuti sidang sarjana','cuti wisuda','cuti melahirkan','cuti khitan','cuti 1 hari area luar kota')
 ,`Status` enum('Pending','Disetujui','Ditolak')
+,`JumlahSisaCuti` int
+,`ApprovedBy` varchar(255)
+,`RejectedBy` varchar(255)
 );
 
 -- --------------------------------------------------------
@@ -128,7 +106,7 @@ CREATE TABLE `statuscuti` (
 --
 DROP TABLE IF EXISTS `laporancuti`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `laporancuti`  AS SELECT row_number() OVER (ORDER BY `pengajuancuti`.`TanggalAwal` ) AS `No`, `pengajuancuti`.`IDKaryawan` AS `IDKaryawan`, `pengajuancuti`.`NamaKaryawan` AS `NamaKaryawan`, `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, ((to_days(`pengajuancuti`.`TanggalAkhir`) - to_days(`pengajuancuti`.`TanggalAwal`)) + 1) AS `Jumlah hari` FROM `pengajuancuti` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `laporancuti`  AS SELECT row_number() OVER (ORDER BY `pengajuancuti`.`TanggalAwal` ) AS `No`, `pengajuancuti`.`IDPengajuan` AS `IDPengajuan`, `pengajuancuti`.`IDKaryawan` AS `IDKaryawan`, `pengajuancuti`.`NamaKaryawan` AS `NamaKaryawan`, `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, ((to_days(`pengajuancuti`.`TanggalAkhir`) - to_days(`pengajuancuti`.`TanggalAwal`)) + 1) AS `JumlahHari`, `pengajuancuti`.`Status` AS `Status` FROM `pengajuancuti` ;
 
 -- --------------------------------------------------------
 
@@ -137,7 +115,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `statuscuti`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `statuscuti`  AS SELECT `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, `pengajuancuti`.`Status` AS `Status` FROM `pengajuancuti` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `statuscuti`  AS SELECT `pengajuancuti`.`IDKaryawan` AS `IDKaryawan`, `pengajuancuti`.`TanggalAwal` AS `TanggalAwal`, `pengajuancuti`.`JenisCuti` AS `JenisCuti`, `pengajuancuti`.`Status` AS `Status`, `pengajuancuti`.`JumlahSisaCuti` AS `JumlahSisaCuti`, `pengajuancuti`.`ApprovedBy` AS `ApprovedBy`, `pengajuancuti`.`RejectedBy` AS `RejectedBy` FROM `pengajuancuti` ;
 
 --
 -- Indexes for dumped tables
@@ -164,10 +142,16 @@ ALTER TABLE `pengajuancuti`
 --
 
 --
+-- AUTO_INCREMENT untuk tabel `karyawan`
+--
+ALTER TABLE `karyawan`
+  MODIFY `IDKaryawan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11212;
+
+--
 -- AUTO_INCREMENT untuk tabel `pengajuancuti`
 --
 ALTER TABLE `pengajuancuti`
-  MODIFY `IDPengajuan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IDPengajuan` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

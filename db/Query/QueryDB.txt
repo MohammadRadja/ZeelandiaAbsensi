@@ -36,7 +36,7 @@ CREATE TABLE PengajuanCuti (
 
 -- Membuat view StatusCuti
 CREATE VIEW StatusCuti AS
-SELECT IDKaryawan, TanggalAwal, JenisCuti, Status, ApprovedBy, RejectedBy
+SELECT IDKaryawan, TanggalAwal, JenisCuti, Status,JumlahSisaCutim ApprovedBy, RejectedBy
 FROM PengajuanCuti;
 
 -- Membuat view LaporanCuti
