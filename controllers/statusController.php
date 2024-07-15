@@ -67,10 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $IDPengajuan = $_POST['IDPengajuan'];
     if (isset($_POST['approveStatus'])) {
         updateStatus($IDPengajuan, 'Disetujui');
-        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh $jabatan";
+        $_SESSION['message'] = "Pengajuan cuti berhasil disetujui oleh ". $_SESSION['jabatan'];
     } elseif (isset($_POST['rejectStatus'])) {
         updateStatus($IDPengajuan, 'Ditolak');
-        $_SESSION['message'] = "Cuti berhasil ditolak oleh $jabatan";
+        $_SESSION['message'] = "Cuti berhasil ditolak oleh ". $_SESSION['jabatan'];
     }
     echo '<script>window.location.href="../view/laporanView.php";</script>';
 }
@@ -99,8 +99,7 @@ function updateStatus($IDPengajuan, $newStatus) {
             return;
         }
 
-        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
-        error_log("Executing query: $query with values: $newStatus, $approver, $IDPengajuan");
+        $stmt->bind_param("sssi", $newStatus, $approver, $approver, $IDPengajuan);
         
         if (!$stmt->execute()) {
             $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL: " . $stmt->error;
@@ -143,9 +142,8 @@ function updateStatus($IDPengajuan, $newStatus) {
             return;
         }
         
-        $stmt->bind_param("ssi", $newStatus, $approver, $IDPengajuan);
-        error_log("Executing query: $query with values: $newStatus, $approver, $IDPengajuan");
-        
+        $stmt->bind_param("sssi", $newStatus, $approver, $approver, $IDPengajuan);
+            
         if (!$stmt->execute()) {
             $_SESSION['message'] = "Error: Gagal mengeksekusi pernyataan SQL untuk penolakan: " . $stmt->error;
             return;
